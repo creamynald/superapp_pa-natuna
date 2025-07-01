@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 
 class BukuTamuResource extends Resource
 {
@@ -49,6 +50,31 @@ class BukuTamuResource extends Resource
                     ->label('Alamat')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\DateTimePicker::make('created_at')
+                    ->label('Jam Datang')
+                    ->required()
+                    ->default(now())
+                    ->withoutSeconds(),
+                    // field leave ini akan tampil ketika data diedit
+                Forms\Components\DateTimePicker::make('leave')
+                    ->label('Jam Keluar')
+                    ->default(null)
+                    ->withoutSeconds()
+                    ->hidden(fn (Forms\Get $get) => is_null($get('id'))),
+                SignaturePad::make('signature')
+                    ->label(__('Tanda Tangan Disini'))
+                    ->dotSize(2.0)
+                    ->lineMinWidth(0.5)
+                    ->lineMaxWidth(2.5)
+                    ->throttle(16)
+                    ->minDistance(5)
+                    ->velocityFilterWeight(0.7)
+                    ->backgroundColor('rgba(255, 255, 255, 0)')  // Background color on light mode
+                    ->backgroundColorOnDark('#fffff')     // Background color on dark mode (defaults to backgroundColor)
+                    ->exportBackgroundColor('#fffff')     // Background color on export (defaults to backgroundColor)
+                    ->penColor('#000')                  // Pen color on light mode
+                    ->penColorOnDark('#fff')            // Pen color on dark mode (defaults to penColor)
+                    ->exportPenColor('#0f0')            // Pen color on export (defaults to penColor)
             ]);
     }
 
@@ -58,34 +84,52 @@ class BukuTamuResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nama Tamu')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Ketemu Siapa')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('purpose')
                     ->label('Tujuan')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('phoneNumber')
-                    ->label('Nomor Handphone')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('address')
-                    ->label('Alamat')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Tanggal Masuk')
-                    ->dateTime()
-                    ->sortable(),
+                    ->label('Jam Datang')
+                    ->dateTime('d/m/Y H:i'),
+                Tables\Columns\TextColumn::make('leave')
+                    ->label('Jam Keluar')
+                    ->dateTime('d/m/Y H:i')
+                    // is data is empty, show 'Belum Keluar'
+                    ->formatStateUsing(fn ($state) => $state ? $state->format('d/m/Y H:i') : 'Belum Keluar'),
+                Tables\Columns\ImageColumn::make('photo')
+                    ->label('Foto')
+                    ->circular()
+                    ->size(50)
+                    ->default('https://ui-avatars.com/api/?name=Guest&background=random&color=fff')
+                    ->toggleable(),  
             ])
             ->filters([
-                //
+                //last data
+                Tables\Filters\Filter::make('today')
+                    ->label('Hari Ini')
+                    ->query(fn (Builder $query) => $query->whereDate('created_at', now()->toDateString())),
+                Tables\Filters\Filter::make('this_week')
+                    ->label('Minggu Ini')
+                    ->query(fn (Builder $query) => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])),
+                Tables\Filters\Filter::make('this_month')
+                    ->label('Bulan Ini')
+                    ->query(fn (Builder $query) => $query->whereMonth('created_at', now()->month)),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('pulang')
+                    ->label('Pulang')
+                    ->icon('heroicon-o-check')
+                    ->requiresConfirmation()
+                    ->action(function (BukuTamu $record) {
+                        $record->update(['leave' => now()]);
+                    })
+                    ->visible(fn (BukuTamu $record) => is_null($record->leave) && $record->created_at->isToday())
+                    ->color('success'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

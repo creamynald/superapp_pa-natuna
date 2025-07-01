@@ -99,11 +99,6 @@ class BerkasPerkaraResource extends Resource
                     ->sortable(),
             ])->filters([
                 //
-            ])->headerActions([
-                Tables\Actions\CreateAction::make(),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
