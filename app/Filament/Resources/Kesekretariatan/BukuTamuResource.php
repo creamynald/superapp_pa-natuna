@@ -26,7 +26,29 @@ class BukuTamuResource extends Resource
     {
         return $form
             ->schema([
-                //
+                Forms\Components\TextInput::make('name')
+                    ->label('Nama Tamu')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\Select::make('user_id')
+                    ->label('Ketemu Siapa')
+                    ->relationship('user', 'name')
+                    ->required()
+                    ->searchable()
+                    ->preload()
+                    ->placeholder('Pilih Pegawai'),
+                Forms\Components\TextInput::make('purpose')
+                    ->label('Tujuan')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\TextInput::make('phoneNumber')
+                    ->label('Nomor Handphone')
+                    ->required()
+                    ->maxLength(15),
+                Forms\Components\TextInput::make('address')
+                    ->label('Alamat')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -34,7 +56,30 @@ class BukuTamuResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Nama Tamu')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Ketemu Siapa')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('purpose')
+                    ->label('Tujuan')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('phoneNumber')
+                    ->label('Nomor Handphone')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('address')
+                    ->label('Alamat')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Masuk')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
                 //
