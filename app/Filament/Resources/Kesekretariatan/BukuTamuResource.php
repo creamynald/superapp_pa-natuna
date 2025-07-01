@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
+use Carbon\Carbon;
 
 class BukuTamuResource extends Resource
 {
@@ -55,12 +56,9 @@ class BukuTamuResource extends Resource
                     ->required()
                     ->default(now())
                     ->withoutSeconds(),
-                    // field leave ini akan tampil ketika data diedit
                 Forms\Components\DateTimePicker::make('leave')
                     ->label('Jam Keluar')
-                    ->default(null)
-                    ->withoutSeconds()
-                    ->hidden(fn (Forms\Get $get) => is_null($get('id'))),
+                    ->default(null),
                 SignaturePad::make('signature')
                     ->label(__('Tanda Tangan Disini'))
                     ->dotSize(2.0)
@@ -97,9 +95,12 @@ class BukuTamuResource extends Resource
                     ->dateTime('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('leave')
                     ->label('Jam Keluar')
-                    ->dateTime('d/m/Y H:i')
-                    // is data is empty, show 'Belum Keluar'
-                    ->formatStateUsing(fn ($state) => $state ? $state->format('d/m/Y H:i') : 'Belum Keluar'),
+                    ->getStateUsing(fn ($record) => $record->leave ? \Carbon\Carbon::parse($record->leave)->format('d/m/Y H:i') : 'Belum Keluar')
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        'Belum Keluar' => 'danger',
+                        default => 'success',
+                    }),
                 Tables\Columns\ImageColumn::make('photo')
                     ->label('Foto')
                     ->circular()
@@ -121,15 +122,6 @@ class BukuTamuResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('pulang')
-                    ->label('Pulang')
-                    ->icon('heroicon-o-check')
-                    ->requiresConfirmation()
-                    ->action(function (BukuTamu $record) {
-                        $record->update(['leave' => now()]);
-                    })
-                    ->visible(fn (BukuTamu $record) => is_null($record->leave) && $record->created_at->isToday())
-                    ->color('success'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

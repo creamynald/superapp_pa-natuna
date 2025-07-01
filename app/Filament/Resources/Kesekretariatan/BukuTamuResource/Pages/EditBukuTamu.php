@@ -14,6 +14,15 @@ class EditBukuTamu extends EditRecord
     {
         return [
             Actions\DeleteAction::make(),
+            Actions\Action::make('pulang')
+                ->label('Pulang')
+                ->icon('heroicon-o-check')
+                ->requiresConfirmation()
+                ->action(function ($record) {
+                    $record->update(['leave' => now()]);
+                })
+                ->visible(fn ($record) => is_null($record->leave) && $record->created_at->isToday())
+                ->color('success'),
         ];
     }
 }
