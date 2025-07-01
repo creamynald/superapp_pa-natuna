@@ -14,8 +14,12 @@ return new class extends Migration
         Schema::create('buku_tamus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('age');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('purpose');
+            $table->string('phoneNumber');
             $table->string('address');
+            $table->string('photo')->nullable();
+            $table->string('signature')->nullable();
             $table->timestamps();
         });
     }
