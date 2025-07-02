@@ -20,6 +20,8 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
+// bulk action
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class BerkasPerkaraResource extends Resource
 {
