@@ -92,14 +92,19 @@ class BukuTamuResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Jam Datang')
-                    ->dateTime('d/m/Y H:i'),
+                    ->dateTime('d/m/Y H:i')
+                    ->badge()
+                    ->color(fn ($state): string => match ($state) {
+                        Carbon::today()->toDateString() => 'success',
+                        default => 'primary',
+                    }),
                 Tables\Columns\TextColumn::make('leave')
                     ->label('Jam Keluar')
                     ->getStateUsing(fn ($record) => $record->leave ? \Carbon\Carbon::parse($record->leave)->format('d/m/Y H:i') : 'Belum Keluar')
                     ->badge()
                     ->color(fn ($state): string => match ($state) {
-                        'Belum Keluar' => 'danger',
-                        default => 'success',
+                        'Belum Keluar' => 'success',
+                        default => 'danger',
                     }),
                 Tables\Columns\ImageColumn::make('photo')
                     ->label('Foto')
@@ -127,7 +132,8 @@ class BukuTamuResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
