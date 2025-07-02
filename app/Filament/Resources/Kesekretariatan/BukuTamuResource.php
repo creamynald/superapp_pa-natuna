@@ -105,8 +105,8 @@ class BukuTamuResource extends Resource
                     ->getStateUsing(fn ($record) => $record->leave ? \Carbon\Carbon::parse($record->leave)->format('d/m/Y H:i') : 'Belum Keluar')
                     ->badge()
                     ->color(fn ($state): string => match ($state) {
-                        'Belum Keluar' => 'success',
-                        default => 'danger',
+                        'Belum Keluar' => 'danger',
+                        default => 'success',
                     }),
                 Tables\Columns\ImageColumn::make('photo')
                     ->label('Foto')
@@ -129,6 +129,10 @@ class BukuTamuResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->successNotificationTitle('Tamu berhasil dihapus')
+                    ->color('danger')
+                    ->requiresConfirmation(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
