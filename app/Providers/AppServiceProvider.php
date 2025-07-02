@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Models\Kepaniteraan\PeminjamanBerkasPerkara;
+use App\Observers\Kepaniteraan\PeminjamanObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        PeminjamanBerkasPerkara::observe(PeminjamanObserver::class);
     }
 }

@@ -42,4 +42,9 @@ class BerkasPerkara extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function peminjaman()
+    {
+        return $this->hasMany(PeminjamanBerkasPerkara::class);
+    }
 }
