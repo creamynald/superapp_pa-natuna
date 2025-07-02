@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Auth;
 
 class BerkasPerkaraResource extends Resource
 {
@@ -54,14 +55,7 @@ class BerkasPerkaraResource extends Resource
                     ->label('Lokasi')
                     ->nullable()
                     ->maxLength(255),
-            ])->columns(2)
-            ->columns([
-                'default' => 1,
-                'sm' => 2,
-                'md' => 2,
-                'lg' => 2,
-                'xl' => 2,
-            ]);
+                    ]);
     }
 
     public static function table(Table $table): Table
@@ -74,31 +68,32 @@ class BerkasPerkaraResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('penggugat')
                     ->label('Penggugat')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tergugat')
                     ->label('Tergugat')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_masuk')
                     ->label('Tanggal Masuk')
-                    ->date()
-                    ->sortable(),
+                    ->date(),
+                Tables\Columns\TextColumn::make('lokasi')   
+                    ->label('Lokasi'),
+                Tables\Columns\TextColumn::make('updated_by')
+                    ->label('Diupdate Oleh')
+                    ->getStateUsing(fn ($record) => $record->updatedBy ? $record->updatedBy->name : 'Tidak Diketahui'),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'tersedia' => 'success',
-                        'dipinjam' => 'warning',
+                        'dipinjam' => 'danger',
                         
-                    }),
-                Tables\Columns\TextColumn::make('lokasi')
-                    ->label('Lokasi'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Dibuat Pada')
-                    ->dateTime()
+                    })
                     ->sortable(),
             ])->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'tersedia' => 'Tersedia',
+                        'dipinjam' => 'Dipinjam',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -107,7 +102,8 @@ class BerkasPerkaraResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array
