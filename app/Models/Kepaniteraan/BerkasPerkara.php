@@ -21,28 +21,6 @@ class BerkasPerkara extends Model
         'lokasi',
     ];
 
-    protected static function booted()
-    {
-        static::creating(function ($model) {
-            $model->created_by = Auth::id();
-            $model->updated_by = Auth::id();
-        });
-
-        static::updating(function ($model) {
-            $model->updated_by = Auth::id();
-        });
-    }
-
-    public function createdBy()
-    {
-        return $this->belongsTo(User::class, 'created_by');
-    }
-
-    public function updatedBy()
-    {
-        return $this->belongsTo(User::class, 'updated_by');
-    }
-
     public function peminjaman()
     {
         return $this->hasMany(PeminjamanBerkasPerkara::class);

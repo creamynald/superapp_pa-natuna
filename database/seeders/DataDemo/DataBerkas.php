@@ -21,8 +21,6 @@ class DataBerkas extends Seeder
                 'tanggal_masuk' => now(),
                 'status' => 'tersedia',
                 'lokasi' => 'Ruang Arsip 1',
-                'created_by' => 2,
-                'updated_by' => 1,
             ],
             [
                 'nomor_perkara' => '456/Pdt.G/2023/PA.Nt',
@@ -31,8 +29,6 @@ class DataBerkas extends Seeder
                 'tanggal_masuk' => now(),
                 'status' => 'dipinjam',
                 'lokasi' => 'Ruang Arsip 2',
-                'created_by' => 3,
-                'updated_by' => 2,
             ],
         ]);
     }
