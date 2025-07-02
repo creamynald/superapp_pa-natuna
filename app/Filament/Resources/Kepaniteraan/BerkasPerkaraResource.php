@@ -13,6 +13,13 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
 
 class BerkasPerkaraResource extends Resource
 {
@@ -28,11 +35,68 @@ class BerkasPerkaraResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nomor_perkara')
-                    ->label('Nomor Perkara')
-                    ->required()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
+                // TextInput::make('nomor_perkara')
+                //     ->label('Nomor Perkara')
+                //     ->disabled()
+                //     ->dehydrated()
+                //     ->required()
+                //     ->unique(ignoreRecord: true),
+                // Placeholder sebagai highlight nomor perkara
+            Placeholder::make('highlight_nomor_perkara')
+                ->label('')
+                ->content(fn (Get $get) => new HtmlString("
+                    <div style='
+                        background-color: #16a44d; 
+                        color: white; 
+                        padding: 1rem; 
+                        font-size: 1.25rem; 
+                        font-weight: bold; 
+                        border-radius: 0.5rem;
+                        text-align: center;
+                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    '>
+                        Nomor Perkara: <br>
+                        {$get('nomor_perkara')}
+                    </div>
+                "))
+                ->columnSpanFull(), // full width
+            // Hidden input untuk simpan data
+            TextInput::make('nomor_perkara')
+                ->label('Nomor Perkara')
+                ->dehydrated()
+                ->required()
+                ->unique(ignoreRecord: true)
+                ->hidden(),
+                Grid::make(3)
+                    ->schema([
+                        TextInput::make('nomor_urut')
+                            ->label('Nomor Perkara')
+                            ->numeric()
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
+
+                        Select::make('jenis_perkara')
+                            ->label('Jenis Perkara')
+                            ->options([
+                                'Pdt.G' => 'Pdt.G',
+                                'Pdt.P' => 'Pdt.P',
+                            ])
+                            ->default('Pdt.G')
+                            ->required()
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
+
+                        TextInput::make('tahun_perkara')
+                            ->label('Tahun')
+                            ->default(date('Y'))
+                            ->numeric()
+                            ->minLength(4)
+                            ->maxLength(4)
+                            ->required()
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
+                    ]),
                 Forms\Components\TextInput::make('penggugat')
                     ->label('Penggugat')
                     ->required()
@@ -120,5 +184,16 @@ class BerkasPerkaraResource extends Resource
             'create' => Pages\CreateBerkasPerkara::route('/create'),
             'edit' => Pages\EditBerkasPerkara::route('/{record}/edit'),
         ];
+    }
+
+    public static function updateNomorPerkara(Set $set, Get $get): void
+    {
+        $nomorUrut = $get('nomor_urut');
+        $jenis = $get('jenis_perkara');
+        $tahun = $get('tahun_perkara');
+
+        if ($nomorUrut && $jenis && $tahun) {
+            $set('nomor_perkara', "$nomorUrut/$jenis/$tahun/PA.Natuna");
+        }
     }
 }
