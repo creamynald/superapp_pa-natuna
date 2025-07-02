@@ -47,7 +47,7 @@ class BukuTamuResource extends Resource
                     ->label('Nomor Handphone')
                     ->required()
                     ->maxLength(15),
-                Forms\Components\TextInput::make('address')
+                Forms\Components\Textarea::make('address')
                     ->label('Alamat')
                     ->required()
                     ->maxLength(255),
@@ -55,10 +55,12 @@ class BukuTamuResource extends Resource
                     ->label('Jam Datang')
                     ->required()
                     ->default(now())
-                    ->withoutSeconds(),
+                    ->withoutSeconds()
+                    ->native(false),
                 Forms\Components\DateTimePicker::make('leave')
                     ->label('Jam Keluar')
-                    ->default(null),
+                    ->default(null)
+                    ->native(false),
                 SignaturePad::make('signature')
                     ->label(__('Tanda Tangan Disini'))
                     ->dotSize(2.0)
