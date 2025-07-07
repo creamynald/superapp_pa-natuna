@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Filament\Resources\Settings;
-
+ 
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Resources\Settings\UserResource\Pages;
 use App\Filament\Resources\Settings\UserResource\RelationManagers;
 use App\Models\User;

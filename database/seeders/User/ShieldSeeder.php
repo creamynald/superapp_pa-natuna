@@ -4,6 +4,9 @@ namespace Database\Seeders\User;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Spatie\Permission\PermissionRegistrar;
+use Illuminate\Database\Eloquent\Model;
+use BezhanSalleh\FilamentShield\Support\Utils;
 
 class ShieldSeeder extends Seeder
 {
