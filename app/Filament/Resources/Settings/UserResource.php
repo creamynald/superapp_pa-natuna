@@ -26,7 +26,34 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                //
+                // with roles
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(255)
+                    ->label('Full Name'),
+                Forms\Components\TextInput::make('email')
+                    ->required()
+                    ->email()       
+                    ->maxLength(255)
+                    ->label('Email Address'),
+                Forms\Components\Select::make('roles')
+                    ->relationship('roles', 'name')
+                    ->multiple()        
+                    ->preload()
+                    ->required()
+                    ->label('Roles'),
+                Forms\Components\TextInput::make('password')
+                    ->password()
+                    ->required(fn (Forms\Get $get) => $get('id') === null)
+                    ->maxLength(255)
+                    ->label('Password'),
+                Forms\Components\TextInput::make('password_confirmation')
+                    ->password()
+                    ->same('password')
+                    ->required(fn (Forms\Get $get) => $get('id') === null)
+                    ->maxLength(255)
+                    ->label('Confirm Password'),
+                
             ]);
     }
 
@@ -34,7 +61,18 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Role')
+                    ->badge(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable(),
             ])
             ->filters([
                 //
