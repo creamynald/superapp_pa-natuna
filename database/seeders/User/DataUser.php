@@ -20,16 +20,19 @@ class DataUser extends Seeder
                 'name' => 'Renaldi',
                 'email' => 'creamynald@gmail.com',
                 'password' => Hash::make('password'),
+                'created_at' => now(),
             ],
             [
                 'name' => 'Bambang',
                 'email' => 'bambang@gmail.com',
                 'password' => Hash::make('password'),
+                'created_at' => now(),
             ],
             [
                 'name' => 'usman',
                 'email' => 'usman@gmail.com',
                 'password' => Hash::make('password'),
+                'created_at' => now(),
             ],
         ]);
     }

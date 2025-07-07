@@ -38,10 +38,9 @@ class UserResource extends Resource
                     ->label('Email Address'),
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
-                    ->multiple()        
+                    ->multiple()
                     ->preload()
-                    ->required()
-                    ->label('Roles'),
+                    ->searchable(),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->required(fn (Forms\Get $get) => $get('id') === null)
@@ -71,8 +70,7 @@ class UserResource extends Resource
                     ->label('Role')
                     ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable(),
+                    ->dateTime() 
             ])
             ->filters([
                 //
