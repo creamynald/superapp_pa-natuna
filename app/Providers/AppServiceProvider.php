@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Kepaniteraan\PeminjamanBerkasPerkara;
 use App\Observers\Kepaniteraan\PeminjamanObserver;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         PeminjamanBerkasPerkara::observe(PeminjamanObserver::class);
         Gate::before(function ($user, $ability) {
-        return $user->hasRole('super_admin') ? true : null;
-    });
+            return $user->hasRole('super_admin') ? true : null;
+        });
     }
 }

@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Saade\FilamentAutograph\Forms\Components\SignaturePad;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class BukuTamuResource extends Resource
 {
@@ -23,6 +24,26 @@ class BukuTamuResource extends Resource
     protected static ?string $navigationGroup = 'Umum';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'Buku Tamu';
+
+    public static function canAccess(): bool
+    {
+        return Auth::check(); // Semua user yang login boleh akses
+    }
+
+    public static function canCreate(): bool
+    {
+        return Auth::check(); // Atau sesuaikan
+    }
+
+    public static function canEdit($record): bool
+    {
+        return Auth::check();
+    }
+
+    public static function canDelete($record): bool
+    {
+        return Auth::check();
+    }
 
     public static function form(Form $form): Form
     {
@@ -106,7 +127,7 @@ class BukuTamuResource extends Resource
                     ->badge()
                     ->color(fn ($state): string => match ($state) {
                         'Belum Keluar' => 'danger',
-                        default => 'success',
+                        default => 'danger',
                     }),
                 Tables\Columns\ImageColumn::make('photo')
                     ->label('Foto')
