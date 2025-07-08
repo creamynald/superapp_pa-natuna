@@ -12,6 +12,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
 
 class DataSaksiResource extends Resource
 {
@@ -50,34 +52,36 @@ class DataSaksiResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_lengkap')
                     ->label('Nama Lengkap')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('alamat')
                     ->label('Alamat')
-                    ->searchable()
-                    ->sortable(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->searchable()
-                    ->sortable()
-                    ->badge(
-                        fn ($state) => match ($state) {
-                            'Laki-Laki' => 'Laki-laki',
-                            'Perempuan' => 'Perempuan',
-                            default => 'Tidak Diketahui',
-                        }
-                    )
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Laki-laki' => 'info',
+                        'Perempuan' => 'danger',
+                        
+                    })
             ])
             ->filters([
                 // 
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                // Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
                 // FilamentExportHeaderAction::make(),
+                FilamentExportBulkAction::make('export')
+                    ->label('Export Data Saksi')
+                    ->color('primary')
+                    ->extraViewData([
+                        'dataSaksi' => 'Data Saksi',
+                    ])
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
