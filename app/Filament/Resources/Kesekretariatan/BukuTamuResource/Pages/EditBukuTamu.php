@@ -15,11 +15,24 @@ class EditBukuTamu extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
-            // tombol pulang field leave
+            Actions\DeleteAction::make(
+                'delete')
+                ->label('Hapus')
+                ->icon('heroicon-o-trash')
+                ->requiresConfirmation()
+                ->action(function () {
+                    $record = $this->getRecord();
+                    $record->delete();
+                    Notification::make()
+                        ->title('Tamu Telah Dihapus')
+                        ->success()
+                        ->send();
+                    $this->redirect(BukuTamuResource::getUrl('index'));
+                }
+            ),
             Actions\Action::make('leave')
                 ->label('Pulang')
-                ->icon('heroicon-o-check')
+                ->icon('heroicon-o-arrow-right-start-on-rectangle')
                 ->requiresConfirmation()
                 ->action(function () {
                     $record = $this->getRecord();
