@@ -1,98 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>{{ $fileName }}</title>
-    <style type="text/css" media="all">
-        * {
-            font-family: DejaVu Sans, sans-serif !important;
-        }
-
+    <title>Data Saksi</title>
+    <style>
         body {
-            margin: 40px;
+            font-family: Arial, sans-serif;
         }
-
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .header img {
-            width: 80px;
-            vertical-align: middle;
-        }
-
-        .header h2 {
-            margin: 5px 0 0 0;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .header p {
-            margin: 2px 0;
-            font-size: 12px;
-        }
-
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-bottom: 20px;
         }
-
         th, td {
-            border: 1px solid #ededed;
+            border: 1px solid black;
             padding: 8px;
-            font-size: 12px;
-            word-break: break-word;
+            text-align: left;
         }
-
         th {
             background-color: #f2f2f2;
-            font-weight: bold;
         }
-
-        .footer {
-            margin-top: 30px;
-            text-align: right;
-            font-size: 10px;
-            color: #666;
+        .center {
+            text-align: center;
+        }
+        h2, h3 {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img src="{{ public_path('images/logo-pa.png') }}" alt="Logo Pengadilan Agama">
-    <h2>PENGADILAN AGAMA NATUNA</h2>
-    <p>Jl. Karya Bakti No. 1, Natuna, Kepulauan Riau</p>
-    <p>Email: pa_natuna@pn-natuna.go.id | Telp: (0773) 1234567</p>
-</div>
+    <h2 class="center">DATA SAKSI</h2>
+    <p class="center">PENGADILAN AGAMA NATUNA</p>
 
-<table>
-    <thead>
-        <tr>
-            @foreach ($columns as $column)
-                <th>{{ $column->getLabel() }}</th>
-            @endforeach
-        </tr>
-    </thead>
-    <tbody>
-        @foreach ($rows as $row)
+    @foreach ($grouped as $nomorPerkara => $saksis)
+        <table>
             <tr>
-                @foreach ($columns as $column)
-                    <td>{{ $row[$column->getName()] }}</td>
-                @endforeach
+                <td>No. Perkara :</td>
+                <td>{{ $nomorPerkara }}</td>
+                <td>No. Antrian Sidang :</td>
+                <td>-</td>
             </tr>
-        @endforeach
-    </tbody>
-</table>
+        </table>
 
-<div class="footer">
-    <p>Dicetak oleh: {{ auth()->user()->name ?? 'Sistem' }}</p>
-    <p>Pada tanggal: {{ now()->format('d F Y H:i') }}</p>
-    <p>NB : {{ $fileName }}</p>
-</div>
+        @foreach ($saksis as $index => $saksi)
+            <h3 class="center">SAKSI {{ $index + 1 }}</h3>
+
+            <table>
+                <tr>
+                    <td>Nama Saksi {{ $index + 1 }}</td>
+                    <td>{{ $saksi['nama_lengkap'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Bin/Binti:</td>
+                    <td>{{ $saksi['bin_binti'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Tempat/Tgl Lahir</td>
+                    <td>{{ $saksi['tempat_tanggal_lahir'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>No NIK KTP</td>
+                    <td>{{ $saksi['nik'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>No Hp/Wa</td>
+                    <td>{{ $saksi['no_hp'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>E-Mail</td>
+                    <td>{{ $saksi['email'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Alamat</td>
+                    <td>{{ $saksi['alamat'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Jenis Kelamin</td>
+                    <td>{{ $saksi['jenis_kelamin'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Agama</td>
+                    <td>{{ $saksi['agama'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Pekerjaan</td>
+                    <td>{{ $saksi['pekerjaan'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Pendidikan Terakhir</td>
+                    <td>{{ $saksi['pendidikan'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Status Kawin</td>
+                    <td>{{ $saksi['status_kawin'] ?? '-' }}</td>
+                </tr>
+                <tr>
+                    <td>Hubungan dgn P/T</td>
+                    <td>{{ $saksi['hubungan_dengan_penggugat_tergugat'] ?? '-' }}</td>
+                </tr>
+            </table>
+        @endforeach
+    @endforeach
 
 </body>
 </html>
