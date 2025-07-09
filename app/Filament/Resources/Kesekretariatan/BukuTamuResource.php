@@ -22,7 +22,7 @@ class BukuTamuResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
     protected static ?string $navigationGroup = 'Umum';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 0;
     protected static ?string $navigationLabel = 'Buku Tamu';
 
     public static function canAccess(): bool
