@@ -83,7 +83,7 @@ class JurnalPerkaraImport implements ToCollection
                     'klasifikasi_perkara' => $klasifikasi,
                     'penggugat'           => $penggugat,
                     'tergugat'            => $tergugat,
-                    'proses_akhir'        => $prosesAkhir,
+                    'proses_terakhir'     => $prosesAkhir,
                 ]
             );
 
