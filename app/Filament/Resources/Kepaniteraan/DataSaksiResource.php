@@ -14,6 +14,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use Filament\Forms\Components\SelectFilter;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Tables\Columns\Layout\Split;
+
 
 class DataSaksiResource extends Resource
 {
@@ -36,18 +40,7 @@ class DataSaksiResource extends Resource
     {
         return $form
             ->schema([
-                // 
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                // Forms\Components\TextInput::make('nama_lengkap')
             ]);
     }
 
@@ -59,12 +52,35 @@ class DataSaksiResource extends Resource
                     ->label('Nomor Perkara')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nama_lengkap')
-                    ->label('Nama Lengkap')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('alamat')
-                    ->label('Alamat')
-                    ->searchable(),
+                // Stack::make([
+                //     // nama lengkap
+                //     Tables\Columns\TextColumn::make('nama_lengkap')
+                //     ->label('Nama Lengkap'),
+                //     // saksi ke
+                //     Tables\Columns\TextColumn::make('saksi_ke')
+                //     ->label('Saksi Ke')
+                //     ->badge()
+                //     ->color(fn (string $state): string => match ($state) {
+                //         '1' => 'primary',
+                //         '2' => 'secondary',
+                //         default => 'default',
+                //     }),
+                // ]),
+                 Tables\Columns\TextColumn::make('nama_lengkap')
+                    ->label('Nama Saksi')
+                    ->formatStateUsing(fn (DataSaksi $record): string => "
+                        <div>
+                            {$record->nama_lengkap}
+                            <div class=\"mt-1 text-xs font-medium text-".match ($record->saksi_ke) {
+                                1 => 'text-green-500',
+                                2 => 'text-red-500',
+                                default => 'text-blue-500',
+                            }."\">
+                                Saksi ke-{$record->saksi_ke}
+                            </div>
+                        </div>
+                    ")
+                    ->html(),
                 Tables\Columns\TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->searchable()
@@ -73,14 +89,19 @@ class DataSaksiResource extends Resource
                         'Laki-laki' => 'info',
                         'Perempuan' => 'danger',
                         
-                    })
+                    }),
             ])
             ->filters([
-                // 
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'reviewing' => 'Reviewing',
+                        'published' => 'Published',
+                    ])
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
-                // Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
@@ -91,13 +112,13 @@ class DataSaksiResource extends Resource
                 //     ->extraViewData([
                 //         'dataSaksi' => 'Data Saksi',
                 //     ])
-                // FilamentExportBulkAction::make('export')
-                // ->label('Export Data Saksi')
-                // ->color('primary')
-                // ->defaultFormat('pdf')
-                // ->extraViewData(fn () => [
-                //     'grouped' => static::getDataGroupedByCase(),
-                // ]),
+                FilamentExportBulkAction::make('export')
+                ->label('Export Data Saksi')
+                ->color('warning')
+                ->defaultFormat('pdf')
+                ->extraViewData(fn () => [
+                    'grouped' => static::getDataGroupedByCase(),
+                ]),
             ]);
             
     }
