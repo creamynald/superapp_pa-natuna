@@ -51,4 +51,9 @@ class JurnalPerkara extends Model
     {
         return $this->hasMany(DataSaksi::class, 'jurnal_perkara_id', 'id');
     }
+
+    public function arsipPerkara()
+    {
+        return $this->hasMany(BerkasPerkara::class, 'jurnal_perkara_id', 'id');
+    }
 }
