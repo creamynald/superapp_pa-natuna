@@ -21,14 +21,34 @@ class ListJurnalPerkaras extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            // Actions\CreateAction::make(),
-            ExcelImportAction::make()
-                ->color("warning")
-                ->label('Impor Perkara')
-                ->icon('heroicon-o-cloud-arrow-up')
-                ->use(JurnalPerkaraImport::class)
-        ];
+        $adaData = JurnalPerkara::count() > 0;
+
+        if ($adaData) {
+            return [
+                ExcelImportAction::make()
+                    ->color("info")
+                    ->label('Update Perkara')
+                    ->icon('heroicon-o-arrow-path')
+                    ->use(JurnalPerkaraImport::class),
+            ];
+        } else {
+            return [
+                ExcelImportAction::make()
+                    ->color("warning")
+                    ->label('Impor Perkara')
+                    ->icon('heroicon-o-cloud-arrow-up')
+                    ->use(JurnalPerkaraImport::class),
+            ];
+        }
+
+        // return [
+        //     // Actions\CreateAction::make(),
+        //     ExcelImportAction::make()
+        //         ->color("warning")
+        //         ->label('Impor Perkara')
+        //         ->icon('heroicon-o-cloud-arrow-up')
+        //         ->use(JurnalPerkaraImport::class)
+        // ];
     }
 
     protected function getHeaderWidgets(): array
