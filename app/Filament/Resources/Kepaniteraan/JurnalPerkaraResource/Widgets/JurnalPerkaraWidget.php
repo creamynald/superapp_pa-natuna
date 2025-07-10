@@ -28,47 +28,81 @@ class JurnalPerkaraWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('primary'),
 
-            // Cerai Gugat
-            Stat::make('Cerai Gugat', $baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Gugat')->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-user')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Gugat')))
-                ->color('warning'),
+            // // Cerai Gugat
+            // Stat::make('Cerai Gugat', $baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Gugat')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-m-user')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Gugat')))
+            //     ->color('warning'),
 
-            // Cerai Talak
-            Stat::make('Cerai Talak', $baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Talak')->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-x-circle')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Talak')))
-                ->color('danger'),
+            // // Cerai Talak
+            // Stat::make('Cerai Talak', $baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Talak')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-m-x-circle')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Talak')))
+            //     ->color('danger'),
 
-            // Penguasaan Anak
-            Stat::make('Penguasaan Anak', $baseQuery->clone()->where('klasifikasi_perkara', 'Penguasaan Anak')->count())
+            // Permohonan = Cerai Gugat + Cerai Talak
+            Stat::make('Gugatan', $baseQuery->clone()
+                ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
+                ->count())
                 ->description('Tahun ini')
-                ->descriptionIcon('heroicon-o-user')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Penguasaan Anak')))
-                ->color('info'),
-
-            // Pengesahan Perkawinan
-            Stat::make('Pengesahan Perkawinan', $baseQuery->clone()->where('klasifikasi_perkara', 'Pengesahan Perkawinan/Istbat Nikah')->count())
+                ->descriptionIcon('heroicon-m-users')
+                ->chart($this->getDataByMonth($baseQuery->clone()
+                    ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))
+                ->color('danger'), 
+                
+            // Permohonan = selain dari Cerai Gugat dan Cerai Talak
+            Stat::make('Permohonan', $baseQuery->clone()
+                ->whereIn('klasifikasi_perkara', [
+                        'Pengesahan Perkawinan/Istbat Nikah', 
+                        'Pembatalan Perkawinan', 
+                        'Kewarisan', 
+                        'Dispensasi Kawin',
+                        'Perwalian',
+                        'Perubahan Akta'
+                    ])
+                ->count())
                 ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-heart')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Pengesahan Perkawinan/Istbat Nikah')))
-                ->color('success'),
-
-            // Pembatalan Perkawinan
-            Stat::make('Pembatalan Perkawinan', $baseQuery->clone()->where('klasifikasi_perkara', 'Pembatalan Perkawinan')->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-minus-circle')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Pembatalan Perkawinan')))
-                ->color('secondary'),
-
-            // Kewarisan
-            Stat::make('Kewarisan', $baseQuery->clone()->where('klasifikasi_perkara', 'Kewarisan')->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-gift')
-                ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Kewarisan')))
+                ->descriptionIcon('heroicon-m-users')
+                ->chart($this->getDataByMonth($baseQuery->clone()
+                    ->whereIn('klasifikasi_perkara', [
+                        'Pengesahan Perkawinan/Istbat Nikah', 
+                        'Pembatalan Perkawinan', 
+                        'Kewarisan', 
+                        'Dispensasi Kawin',
+                        'Perwalian',
+                        'Perubahan Akta'
+                    ])))
                 ->color('primary'),
+
+            // // Penguasaan Anak
+            // Stat::make('Penguasaan Anak', $baseQuery->clone()->where('klasifikasi_perkara', 'Penguasaan Anak')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-o-user')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Penguasaan Anak')))
+            //     ->color('info'),
+
+            // // Pengesahan Perkawinan
+            // Stat::make('Pengesahan Perkawinan', $baseQuery->clone()->where('klasifikasi_perkara', 'Pengesahan Perkawinan/Istbat Nikah')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-m-heart')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Pengesahan Perkawinan/Istbat Nikah')))
+            //     ->color('success'),
+
+            // // Pembatalan Perkawinan
+            // Stat::make('Pembatalan Perkawinan', $baseQuery->clone()->where('klasifikasi_perkara', 'Pembatalan Perkawinan')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-m-minus-circle')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Pembatalan Perkawinan')))
+            //     ->color('secondary'),
+
+            // // Kewarisan
+            // Stat::make('Kewarisan', $baseQuery->clone()->where('klasifikasi_perkara', 'Kewarisan')->count())
+            //     ->description('Tahun ini')
+            //     ->descriptionIcon('heroicon-m-gift')
+            //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Kewarisan')))
+            //     ->color('primary'),
         ];
     }
 

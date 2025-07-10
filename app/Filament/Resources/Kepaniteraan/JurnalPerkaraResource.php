@@ -95,6 +95,12 @@ class JurnalPerkaraResource extends Resource
                         'Kewarisan' => 'info',
                     })
                     ->icon(fn ($state): string => match ($state) {
+                        'P3HP/Penetapan Ahli Waris' => 'heroicon-m-users',
+                        'Perwalian' => 'heroicon-m-users',
+                        'Perubahan Akta' => 'heroicon-m-pencil-square',
+                        'Pembatalan Perkawinan' => 'heroicon-m-minus-circle',
+                        'Kewarisan' => 'heroicon-m-gift',
+                        'Dispensasi Kawin' => 'heroicon-m-users',
                         'Cerai Gugat' => 'heroicon-m-users',
                         'Cerai Talak' => 'heroicon-m-users',
                         'Penguasaan Anak' => 'heroicon-m-user',
