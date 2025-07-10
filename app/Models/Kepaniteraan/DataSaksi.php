@@ -14,6 +14,7 @@ class DataSaksi extends Model
         'nik',
         'nama_lengkap',
         'bin_binti',
+        'saksi_ke',
         'alamat',
         'tempat_tanggal_lahir',
         'email',
@@ -38,4 +39,15 @@ class DataSaksi extends Model
     {
         return $this->belongsTo(JurnalPerkara::class, 'jurnal_perkara_id');
     }
+
+    // get data saksi yang nomor perkaranya sama
+    public static function getDataGroupedByCase()
+    {
+        return self::with('jurnalPerkara')
+            ->select('jurnal_perkara_id', 'nama_lengkap', 'jenis_kelamin', 'alamat', 'created_at')
+            ->get()
+            ->groupBy(function ($item) {
+                return $item->jurnalPerkara->nomor_perkara ?? 'Tidak Diketahui';
+            }); 
+        }
 }

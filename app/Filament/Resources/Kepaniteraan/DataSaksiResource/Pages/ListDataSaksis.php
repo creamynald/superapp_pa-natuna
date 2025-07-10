@@ -447,6 +447,8 @@ class ListDataSaksis extends ListRecords
                         'nik' => $data['nik'],
                         'nama_lengkap' => $data['nama_lengkap'],
                         'bin_binti' => $data['bin_binti'],
+                        // force saksi_ke to 1
+                        'saksi_ke' => 1,
                         'alamat' => $data['alamat'],
                         'tempat_tanggal_lahir' => $data['tempat_tanggal_lahir'],
                         'email' => $data['email'] ?? null,
@@ -474,6 +476,8 @@ class ListDataSaksis extends ListRecords
                         'nik' => $data['nik2'],
                         'nama_lengkap' => $data['nama_lengkap2'],
                         'bin_binti' => $data['bin_binti2'],
+                        // force saksi_ke to 2
+                        'saksi_ke' => 2,
                         'alamat' => $data['alamat2'],
                         'tempat_tanggal_lahir' => $data['tempat_tanggal_lahir2'],
                         'email' => $data['email2'] ?? null,
