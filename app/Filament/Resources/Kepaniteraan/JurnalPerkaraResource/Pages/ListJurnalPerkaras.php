@@ -6,6 +6,7 @@ use App\Filament\Imports\Kepaniteraan\JurnalPerkaraImporter;
 use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Widgets\JurnalPerkaraWidget;
 
 use Filament\Resources\Resource;
 use HayderHatem\FilamentExcelImport\Actions\Concerns\CanImportExcelRecords;
@@ -24,6 +25,21 @@ class ListJurnalPerkaras extends ListRecords
                 ->color("primary")
                 ->label('Impor Perkara')
                 ->icon('heroicon-o-cloud-arrow-up'),
+                
         ];
     }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            JurnalPerkaraWidget::class,
+        ];
+    }
+
+    // protected function getFooterWidgets(): array
+    // {
+    //     return [
+    //         JurnalPerkaraWidget::class,
+    //     ];
+    // }
 }

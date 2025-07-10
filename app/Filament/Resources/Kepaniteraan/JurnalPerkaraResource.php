@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Widgets\JurnalPerkaraWidget;
 
 class JurnalPerkaraResource extends Resource
 {
@@ -20,9 +21,15 @@ class JurnalPerkaraResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
     protected static ?string $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 1;
-    // label
     protected static ?string $label = 'Jurnal Perkara';
     protected static ?string $pluralLabel = 'Jurnal Perkara';
+    
+    public static function getWidgets(): array
+    {
+        return [
+            JurnalPerkaraWidget::class,
+        ];
+    }
 
     public static function form(Form $form): Form
     {
