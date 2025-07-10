@@ -11,6 +11,7 @@ use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Widgets\JurnalPerk
 use Filament\Resources\Resource;
 use HayderHatem\FilamentExcelImport\Actions\Concerns\CanImportExcelRecords;
 use App\Models\Kepaniteraan\JurnalPerkara;
+use \EightyNine\ExcelImport\ExcelImportAction;
 
 class ListJurnalPerkaras extends ListRecords
 {
@@ -21,7 +22,7 @@ class ListJurnalPerkaras extends ListRecords
     {
         return [
             // Actions\CreateAction::make(),
-            \EightyNine\ExcelImport\ExcelImportAction::make()
+            ExcelImportAction::make()
                 ->color("primary")
                 ->label('Impor Perkara')
                 ->icon('heroicon-o-cloud-arrow-up'),

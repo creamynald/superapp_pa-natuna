@@ -13,6 +13,9 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Widgets\JurnalPerkaraWidget;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
 
 class JurnalPerkaraResource extends Resource
 {
@@ -80,9 +83,18 @@ class JurnalPerkaraResource extends Resource
                         'Cerai Gugat' => 'primary',
                         'Cerai Talak' => 'danger',
                         'Penguasaan Anak' => 'success',
-                        'Pengesahan Perkawinan/Istbat Nikah' => 'success',
-                        'Pembatalan Perkawinan' => 'success',
-                        'Kewarisan' => 'success',
+                        'Pengesahan Perkawinan/Istbat Nikah' => 'warning',
+                        'Pembatalan Perkawinan' => 'danger',
+                        'Kewarisan' => 'info',
+                    })
+                    ->icon(fn ($state): string => match ($state) {
+                        'Cerai Gugat' => 'heroicon-m-users',
+                        'Cerai Talak' => 'heroicon-m-users',
+                        'Penguasaan Anak' => 'heroicon-m-user',
+                        'Pengesahan Perkawinan/Istbat Nikah' => 'heroicon-m-heart',
+                        'Pembatalan Perkawinan' => 'heroicon-m-minus-circle',
+                        'Kewarisan' => 'heroicon-m-gift',
+                        default => 'heroicon-m-document-text',
                     }),
                 Tables\Columns\TextColumn::make('penggugat')
                     ->label('Penggugat')
@@ -94,7 +106,33 @@ class JurnalPerkaraResource extends Resource
             ])
             // ->modifyQueryUsing(fn ($query) => $query->latestPerkara())
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('klasifikasi_perkara')
+                    ->options([
+                        'Cerai Gugat' => 'Cerai Gugat',
+                        'Cerai Talak' => 'Cerai Talak',
+                        'Penguasaan Anak' => 'Penguasaan Anak',
+                        'Pengesahan Perkawinan/Istbat Nikah' => 'Pengesahan Perkawinan/Istbat Nikah',
+                        'Pembatalan Perkawinan' => 'Pembatalan Perkawinan',
+                        'Kewarisan' => 'Kewarisan',
+                    ]),
+                    // filter tahun from 'nomor_perkara' etc. 107/Pdt.G/2025/PA.Ntn get 2025
+                Tables\Filters\SelectFilter::make('nomor_perkara')
+                    ->label('Tahun Perkara')
+                    ->options(function () {
+                        return JurnalPerkara::query()
+                            ->selectRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(nomor_perkara, '/', 3), '/', -1) as tahun")
+                            ->distinct()
+                            ->pluck('tahun', 'tahun')
+                            ->filter()
+                            ->sortDesc()
+                            ->toArray();
+                    })
+                    ->default(Carbon::now()->year)
+                    ->modifyQueryUsing(fn ($query, $data) => $query->whereRaw(
+                        "SUBSTRING_INDEX(SUBSTRING_INDEX(nomor_perkara, '/', 3), '/', -1) = ?",
+                        [$data]
+                    )),
+                
             ])
             ->actions([
                 // Tables\Actions\EditAction::make(),
