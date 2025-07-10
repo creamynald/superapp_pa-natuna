@@ -22,6 +22,7 @@ use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportBulkAction;
+use App\Models\Kepaniteraan\JurnalPerkara;
 
 class BerkasPerkaraResource extends Resource
 {
@@ -40,76 +41,23 @@ class BerkasPerkaraResource extends Resource
     {
         return $form
             ->schema([
-                // TextInput::make('nomor_perkara')
-                //     ->label('Nomor Perkara')
-                //     ->disabled()
-                //     ->dehydrated()
-                //     ->required()
-                //     ->unique(ignoreRecord: true),
-                // Placeholder sebagai highlight nomor perkara
-            Placeholder::make('highlight_nomor_perkara')
-                ->label('')
-                ->content(fn (Get $get) => new HtmlString("
-                    <div style='
-                        background-color: #16a44d; 
-                        color: white; 
-                        padding: 1rem; 
-                        font-size: 1.25rem; 
-                        font-weight: bold; 
-                        border-radius: 0.5rem;
-                        text-align: center;
-                        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                    '>
-                        Nomor Perkara: <br>
-                        {$get('nomor_perkara')}
-                    </div>
-                "))
-                ->columnSpanFull(), // full width
-            // Hidden input untuk simpan data
-            TextInput::make('nomor_perkara')
-                ->label('Nomor Perkara')
-                ->dehydrated()
-                ->required()
-                ->unique(ignoreRecord: true)
-                ->hidden(),
-                Grid::make(3)
-                    ->schema([
-                        TextInput::make('nomor_urut')
-                            ->label('Nomor Perkara')
-                            ->numeric()
-                            ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
-
-                        Select::make('jenis_perkara')
-                            ->label('Jenis Perkara')
-                            ->options([
-                                'Pdt.G' => 'Pdt.G',
-                                'Pdt.P' => 'Pdt.P',
-                            ])
-                            ->default('Pdt.G')
-                            ->required()
-                            ->live()
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
-
-                        TextInput::make('tahun_perkara')
-                            ->label('Tahun')
-                            ->default(date('Y'))
-                            ->numeric()
-                            ->minLength(4)
-                            ->maxLength(4)
-                            ->required()
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn (Set $set, Get $get) => self::updateNomorPerkara($set, $get)),
-                    ]),
-                Forms\Components\TextInput::make('penggugat')
-                    ->label('Penggugat')
+                Select::make('jurnal_perkara_id')
+                    ->label('Nomor Perkara')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('tergugat')
-                    ->label('Tergugat')
-                    ->required()
-                    ->maxLength(255),
+                    ->searchable()
+                    ->preload()
+                    ->options(function (callable $get) {
+                        return JurnalPerkara::latestPerkara()
+                            ->when($get('jenis_perkara'), function (Builder $query, $jenisPerkara) {
+                                return $query->where('klasifikasi_perkara', $jenisPerkara);
+                            })
+                            ->when($get('tahun_perkara'), function (Builder $query, $tahunPerkara) {
+                                return $query->whereYear('created_at', $tahunPerkara);
+                            })
+                            ->pluck('nomor_perkara', 'id');
+                    })
+                    ->reactive()
+                    ->afterStateUpdated(fn (callable $set) => $set('dari_pihak', null)), // reset dari_pihak jika ganti perkara
                 Forms\Components\DatePicker::make('tanggal_masuk')
                     ->label('Tanggal Arsip')
                     ->required(),
@@ -131,21 +79,9 @@ class BerkasPerkaraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_perkara')
+                Tables\Columns\TextColumn::make('jurnalPerkara.nomor_perkara')
                     ->label('Nomor Perkara')
-                    ->searchable()
-                    ->sortable(),
-                // Tables\Columns\TextColumn::make('penggugat')
-                //     ->label('Penggugat')
-                //     ->searchable(),
-                // Tables\Columns\TextColumn::make('tergugat')
-                //     ->label('Tergugat')
-                //     ->searchable(),
-                Tables\Columns\TextColumn::make('tanggal_masuk')
-                    ->label('Tanggal Arsip')
-                    ->date(),
-                Tables\Columns\TextColumn::make('lokasi')   
-                    ->label('Lokasi'),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -154,6 +90,11 @@ class BerkasPerkaraResource extends Resource
                         
                     })
                     ->sortable(),
+                Tables\Columns\TextColumn::make('lokasi')   
+                    ->label('Lokasi'),
+                Tables\Columns\TextColumn::make('tanggal_masuk')
+                    ->label('Tanggal Arsip')
+                    ->date(),
             ])->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options([
