@@ -23,6 +23,10 @@ class PeminjamanBerkasPerkaraResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationParentItem = 'Arsip Perkara';
+    protected static ?string $label = 'Peminjaman';
+    protected static ?string $pluralLabel = 'Peminjaman';
+
     public static function form(Form $form): Form
     {
         return $form

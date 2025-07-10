@@ -27,7 +27,10 @@ class BerkasPerkaraResource extends Resource
 {
     protected static ?string $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 2;
-    protected static ?string $navigationLabel = 'Berkas Perkara';
+    protected static ?string $navigationLabel = 'Arsip Perkara';
+
+    protected static ?string $label = 'Arsip Perkara';
+    protected static ?string $pluralLabel = 'Arsip Perkara';
 
     protected static ?string $model = BerkasPerkara::class;
 
