@@ -32,6 +32,11 @@ class DataSaksiResource extends Resource
     protected static ?string $label = 'Data Saksi';
     protected static ?string $pluralLabel = 'Data Saksi';
 
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function canCreate(): bool
     {
         return false; // karena semua input lewat header action
