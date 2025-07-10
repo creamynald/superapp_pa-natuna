@@ -28,6 +28,26 @@ class JurnalPerkaraWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('primary'),
 
+            // Permohonan = Cerai Gugat + Cerai Talak
+            Stat::make('Gugatan', $baseQuery->clone()
+                ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
+                ->count())
+                ->description('Tahun ini')
+                ->descriptionIcon('heroicon-m-users')
+                ->chart($this->getDataByMonth($baseQuery->clone()
+                    ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))
+                ->color('danger'), 
+                
+            // Permohonan = selain dari Cerai Gugat dan Cerai Talak
+            Stat::make('Permohonan', $baseQuery->clone()
+                ->whereNotIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
+                ->count())
+                ->description('Tahun ini')
+                ->descriptionIcon('heroicon-m-users')
+                ->chart($this->getDataByMonth($baseQuery->clone()
+                    ->whereNotIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))
+                ->color('primary'),
+
             // // Cerai Gugat
             // Stat::make('Cerai Gugat', $baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Gugat')->count())
             //     ->description('Tahun ini')
@@ -41,40 +61,6 @@ class JurnalPerkaraWidget extends BaseWidget
             //     ->descriptionIcon('heroicon-m-x-circle')
             //     ->chart($this->getDataByMonth($baseQuery->clone()->where('klasifikasi_perkara', 'Cerai Talak')))
             //     ->color('danger'),
-
-            // Permohonan = Cerai Gugat + Cerai Talak
-            Stat::make('Gugatan', $baseQuery->clone()
-                ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
-                ->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-users')
-                ->chart($this->getDataByMonth($baseQuery->clone()
-                    ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))
-                ->color('danger'), 
-                
-            // Permohonan = selain dari Cerai Gugat dan Cerai Talak
-            Stat::make('Permohonan', $baseQuery->clone()
-                ->whereIn('klasifikasi_perkara', [
-                        'Pengesahan Perkawinan/Istbat Nikah', 
-                        'Pembatalan Perkawinan', 
-                        'Kewarisan', 
-                        'Dispensasi Kawin',
-                        'Perwalian',
-                        'Perubahan Akta'
-                    ])
-                ->count())
-                ->description('Tahun ini')
-                ->descriptionIcon('heroicon-m-users')
-                ->chart($this->getDataByMonth($baseQuery->clone()
-                    ->whereIn('klasifikasi_perkara', [
-                        'Pengesahan Perkawinan/Istbat Nikah', 
-                        'Pembatalan Perkawinan', 
-                        'Kewarisan', 
-                        'Dispensasi Kawin',
-                        'Perwalian',
-                        'Perubahan Akta'
-                    ])))
-                ->color('primary'),
 
             // // Penguasaan Anak
             // Stat::make('Penguasaan Anak', $baseQuery->clone()->where('klasifikasi_perkara', 'Penguasaan Anak')->count())
