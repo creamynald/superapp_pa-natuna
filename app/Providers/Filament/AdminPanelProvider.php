@@ -33,6 +33,11 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->font('Helvetica Neue')
             ->darkMode(false)
+            ->brandName('SUPER APP')
+            ->brandLogo(asset('images/logo-pa.png'))
+            ->brandLogoHeight('2rem')
+            ->favicon(asset('images/logo-pa.png'))
+            // ->brandIcon('heroicon-o-courtroom')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
