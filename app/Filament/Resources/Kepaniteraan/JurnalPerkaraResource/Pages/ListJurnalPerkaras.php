@@ -24,7 +24,7 @@ class ListJurnalPerkaras extends ListRecords
         return [
             // Actions\CreateAction::make(),
             ExcelImportAction::make()
-                ->color("primary")
+                ->color("warning")
                 ->label('Impor Perkara')
                 ->icon('heroicon-o-cloud-arrow-up')
                 ->use(JurnalPerkaraImport::class)
