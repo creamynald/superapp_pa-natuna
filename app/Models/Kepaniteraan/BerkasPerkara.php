@@ -13,9 +13,7 @@ class BerkasPerkara extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nomor_perkara',
-        'penggugat',
-        'tergugat',
+        'jurnal_perkara_id',
         'tanggal_masuk',
         'status',
         'lokasi',
@@ -24,5 +22,10 @@ class BerkasPerkara extends Model
     public function peminjaman()
     {
         return $this->hasMany(PeminjamanBerkasPerkara::class);
+    }
+
+    public function jurnalPerkara()
+    {
+        return $this->belongsTo(JurnalPerkara::class);
     }
 }
