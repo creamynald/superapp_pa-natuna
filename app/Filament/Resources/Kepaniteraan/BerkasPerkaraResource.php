@@ -135,12 +135,12 @@ class BerkasPerkaraResource extends Resource
                     ->label('Nomor Perkara')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('penggugat')
-                    ->label('Penggugat')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('tergugat')
-                    ->label('Tergugat')
-                    ->searchable(),
+                // Tables\Columns\TextColumn::make('penggugat')
+                //     ->label('Penggugat')
+                //     ->searchable(),
+                // Tables\Columns\TextColumn::make('tergugat')
+                //     ->label('Tergugat')
+                //     ->searchable(),
                 Tables\Columns\TextColumn::make('tanggal_masuk')
                     ->label('Tanggal Arsip')
                     ->date(),
@@ -166,17 +166,17 @@ class BerkasPerkaraResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                    FilamentExportBulkAction::make('Export')
-                    ->extraViewData([
-                        'fileName' => 'Laporan Berkas Perkara - Bulan Ini',
-                    ])
+                    // Tables\Actions\DeleteBulkAction::make(),
+                    // FilamentExportBulkAction::make('Export')
+                    // ->extraViewData([
+                    //     'fileName' => 'Laporan Berkas Perkara - Bulan Ini',
+                    // ])
                 ]),
             ])
             ->headerActions([
-                FilamentExportHeaderAction::make('export')
-                    ->defaultFormat('pdf') // xlsx, csv or pdf
-                    ->disableAdditionalColumns()
+                // FilamentExportHeaderAction::make('export')
+                //     ->defaultFormat('pdf') // xlsx, csv or pdf
+                //     ->disableAdditionalColumns()
             ])
             ->defaultSort('created_at', 'desc');
     }
