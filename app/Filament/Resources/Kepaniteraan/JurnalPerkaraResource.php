@@ -117,7 +117,7 @@ class JurnalPerkaraResource extends Resource
                 Tables\Columns\TextColumn::make('proses_terakhir')
                     ->label('Proses Terakhir'),
             ])
-            // ->modifyQueryUsing(fn ($query) => $query->latestPerkara())
+            ->modifyQueryUsing(fn ($query) => $query->latestPerkara())
             ->filters([
                 Tables\Filters\SelectFilter::make('klasifikasi_perkara')
                     ->options([

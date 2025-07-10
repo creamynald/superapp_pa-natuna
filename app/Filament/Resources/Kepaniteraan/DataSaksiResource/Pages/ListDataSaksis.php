@@ -15,6 +15,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Actions\Action;
 use App\Models\Kepaniteraan\DataSaksi;
 use Filament\Support\Enums\MaxWidth;
+use Filament\Forms\Components\TextSelect;
 
 class ListDataSaksis extends ListRecords
 {
@@ -31,7 +32,7 @@ class ListDataSaksis extends ListRecords
                     Step::make('Detail Perkara')
                         ->description('Masukkan informasi dasar')
                         ->schema([
-                            TextInput::make('nomor_perkara')
+                            TextSelect::make('nomor_perkara')
                                 ->helperText('Contoh: 123/Pdt.(P/G)/2025/PA.Ntn')
                                 ->label('Nomor Perkara')
                                 ->required()
@@ -40,7 +41,8 @@ class ListDataSaksis extends ListRecords
                                 ->helperText('Fulan bin Fulan / Fulani binti Fulani')
                                 ->label('Dari Pihak')
                                 ->required()
-                                ->maxLength(255),
+                                ->maxLength(255)
+                                ->disablePlaceholderSelection()
                         ])->columns(2),
 
                     Step::make('Data Saksi 1')

@@ -24,7 +24,7 @@ class JurnalPerkaraWidget extends BaseWidget
 
         return [
             Stat::make("Jumlah Perkara Tahun {$tahunIni}", $baseQuery->count())
-                ->description("Dari {$jumlahSemuaPerkara->count()} perkara")
+                ->description("Dari {$jumlahSemuaPerkara->count()} perkara PA Natuna")
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('primary'),
 
@@ -32,7 +32,7 @@ class JurnalPerkaraWidget extends BaseWidget
             Stat::make('Gugatan', $baseQuery->clone()
                 ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
                 ->count())
-                ->description('Tahun ini')
+                ->description("Tahun {$tahunIni}")
                 ->descriptionIcon('heroicon-m-users')
                 ->chart($this->getDataByMonth($baseQuery->clone()
                     ->whereIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))
@@ -42,7 +42,7 @@ class JurnalPerkaraWidget extends BaseWidget
             Stat::make('Permohonan', $baseQuery->clone()
                 ->whereNotIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])
                 ->count())
-                ->description('Tahun ini')
+                ->description("Tahun {$tahunIni}")
                 ->descriptionIcon('heroicon-m-users')
                 ->chart($this->getDataByMonth($baseQuery->clone()
                     ->whereNotIn('klasifikasi_perkara', ['Cerai Gugat', 'Cerai Talak'])))

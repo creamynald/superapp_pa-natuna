@@ -21,7 +21,12 @@ class DataSaksiResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
     protected static ?string $navigationGroup = 'Kepaniteraan';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 2;  
+    protected static ?string $navigationLabel = 'Data Saksi';
+
+    protected static ?string $navigationParentItem = 'Jurnal Perkara';
+    protected static ?string $label = 'Data Saksi';
+    protected static ?string $pluralLabel = 'Data Saksi';
 
     public static function form(Form $form): Form
     {
@@ -89,10 +94,7 @@ class DataSaksiResource extends Resource
                 ->extraViewData(fn () => [
                     'grouped' => static::getDataGroupedByCase(),
                 ]),
-            ])
-            ->emptyStateActions([
-                Tables\Actions\CreateAction::make(),
-            ]); 
+            ]);
             
     }
 
