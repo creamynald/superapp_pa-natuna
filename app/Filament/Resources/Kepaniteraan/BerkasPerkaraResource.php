@@ -83,15 +83,31 @@ class BerkasPerkaraResource extends Resource
                     ->label('Nomor Perkara')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'tersedia' => 'success',
-                        'dipinjam' => 'danger',
-                        
+                        'dipinjam' => 'warning',
+                    })
+                    ->icon(fn (string $state): ?string => match ($state) {
+                        'tersedia' => 'heroicon-o-check-circle',
+                        'dipinjam' => 'heroicon-o-exclamation-circle',
+                    })
+                    ->formatStateUsing(function ($state, $record) {
+                        if ($state === 'tersedia') {
+                            return "Tersedia\nLokasi: {$record->lokasi}";
+                        }
+
+                        if ($state === 'dipinjam') {
+                            // Asumsikan ada relasi pinjaman atau field seperti `dipinjam_oleh`
+                            // Contoh: $record->dipinjam_oleh atau $record->peminjaman->user->name
+                            $peminjam = $record->dipinjam_oleh ?? 'User tidak ditemukan'; // Sesuaikan dengan relasi/model kamu
+                            return "Dipinjam\nOleh: {$peminjam}";
+                        }
+
+                        return $state;
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('lokasi')   
-                    ->label('Lokasi'),
                 Tables\Columns\TextColumn::make('tanggal_masuk')
                     ->label('Tanggal Arsip')
                     ->date(),

@@ -17,8 +17,8 @@ class ListBerkasPerkaras extends ListRecords
             Actions\CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
-                ->label('Tambah Berkas Perkara')
-                ->modalHeading('Tambah Berkas Perkara'),
+                ->label('Tambah Arsip Perkara')
+                ->modalHeading('Tambah Arsip Perkara'),
         ];
     }
 
