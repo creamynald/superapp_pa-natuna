@@ -9,7 +9,7 @@ class DataSaksi extends Model
     protected $table = 'data_saksis';
     
     protected $fillable = [
-        'nomor_perkara',
+        'jurnal_perkara_id',
         'dari_pihak',
         'nik',
         'nama_lengkap',
@@ -34,8 +34,8 @@ class DataSaksi extends Model
         'status_pisah_rumah',
     ];
 
-    public function getRouteKeyName()
+    public function jurnalPerkara()
     {
-        return 'id';
+        return $this->belongsTo(JurnalPerkara::class, 'jurnal_perkara_id');
     }
 }

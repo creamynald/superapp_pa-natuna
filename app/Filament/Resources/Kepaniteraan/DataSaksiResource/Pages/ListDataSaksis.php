@@ -16,6 +16,7 @@ use Filament\Forms\Components\Actions\Action;
 use App\Models\Kepaniteraan\DataSaksi;
 use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\TextSelect;
+use App\Models\Kepaniteraan\JurnalPerkara;
 
 class ListDataSaksis extends ListRecords
 {
@@ -28,21 +29,48 @@ class ListDataSaksis extends ListRecords
             Actions\Action::make('Tambah Data Saksi')
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
-            ->steps([
+                ->steps([
                     Step::make('Detail Perkara')
                         ->description('Masukkan informasi dasar')
                         ->schema([
-                            TextSelect::make('nomor_perkara')
-                                ->helperText('Contoh: 123/Pdt.(P/G)/2025/PA.Ntn')
+                            Select::make('jurnal_perkara_id')
                                 ->label('Nomor Perkara')
                                 ->required()
-                                ->maxLength(255),
-                            TextInput::make('dari_pihak')
-                                ->helperText('Fulan bin Fulan / Fulani binti Fulani')
+                                ->helperText('Contoh: 123/Pdt.(P/G)/2025/PA.Ntn')
+                                ->searchable()
+                                ->preload()
+                                ->options(function (callable $get) {
+                                    return JurnalPerkara::latestPerkara()
+                                        ->search($get('jurnal_perkara_id'))
+                                        ->pluck('nomor_perkara', 'id')
+                                        ->toArray();
+                                })
+                                ->reactive()
+                                ->afterStateUpdated(fn (callable $set) => $set('dari_pihak', null)), // reset dari_pihak jika ganti perkara
+
+                            Select::make('dari_pihak')
                                 ->label('Dari Pihak')
                                 ->required()
-                                ->maxLength(255)
-                                ->disablePlaceholderSelection()
+                                ->placeholder('Pilih Penggugat/Tergugat')
+                                ->helperText('Pilih pihak mana yang akan diinputkan saksi')
+                                ->options(function (callable $get) {
+                                    $jurnalPerkaraId = $get('jurnal_perkara_id');
+                                    if (!$jurnalPerkaraId) {
+                                        return [];
+                                    }
+
+                                    $jurnalPerkara = JurnalPerkara::find($jurnalPerkaraId);
+                                    if (!$jurnalPerkara) {
+                                        return [];
+                                    }
+
+                                    return //nama penggugat dan tergugat
+                                        [
+                                            'Penggugat' => $jurnalPerkara->penggugat,
+                                            'Tergugat' => $jurnalPerkara->tergugat,
+                                        ];
+                                })
+                                ->default('Penggugat'),
                         ])->columns(2),
 
                     Step::make('Data Saksi 1')
@@ -408,13 +436,13 @@ class ListDataSaksis extends ListRecords
                         ]),
                 ])
                 ->action(function (array $data) {
-                    // Ambil nomor_perkara dan dari_pihak dari step pertama
-                    $nomorPerkara = $data['nomor_perkara'];
+                    // Ambil jurnal_perkara_id dan dari_pihak dari step pertama
+                    $nomorPerkara = $data['jurnal_perkara_id'];
                     $dariPihak = $data['dari_pihak'];
 
                     // Simpan Saksi 1
                     \App\Models\Kepaniteraan\DataSaksi::create([
-                        'nomor_perkara' => $nomorPerkara,
+                        'jurnal_perkara_id' => $nomorPerkara,
                         'dari_pihak' => $dariPihak,
                         'nik' => $data['nik'],
                         'nama_lengkap' => $data['nama_lengkap'],
@@ -441,7 +469,7 @@ class ListDataSaksis extends ListRecords
 
                     // Simpan Saksi 2 (field sama, tapi nilai berbeda)
                     \App\Models\Kepaniteraan\DataSaksi::create([
-                        'nomor_perkara' => $nomorPerkara,
+                        'jurnal_perkara_id' => $nomorPerkara,
                         'dari_pihak' => $dariPihak,
                         'nik' => $data['nik2'],
                         'nama_lengkap' => $data['nama_lengkap2'],
