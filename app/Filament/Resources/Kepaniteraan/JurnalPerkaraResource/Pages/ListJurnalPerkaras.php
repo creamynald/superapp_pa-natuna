@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Pages;
 
-use App\Filament\Imports\Kepaniteraan\JurnalPerkaraImporter;
+// use App\Filament\Imports\Kepaniteraan\JurnalPerkaraImporter;
+use App\Imports\JurnalPerkaraImport;
 use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -25,8 +26,8 @@ class ListJurnalPerkaras extends ListRecords
             ExcelImportAction::make()
                 ->color("primary")
                 ->label('Impor Perkara')
-                ->icon('heroicon-o-cloud-arrow-up'),
-                
+                ->icon('heroicon-o-cloud-arrow-up')
+                ->use(JurnalPerkaraImport::class)
         ];
     }
 

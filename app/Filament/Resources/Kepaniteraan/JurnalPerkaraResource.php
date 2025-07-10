@@ -51,6 +51,10 @@ class JurnalPerkaraResource extends Resource
                         'Pengesahan Perkawinan/Istbat Nikah' => 'Pengesahan Perkawinan/Istbat Nikah',
                         'Pembatalan Perkawinan' => 'Pembatalan Perkawinan',
                         'Kewarisan' => 'Kewarisan',
+                        'Dispensasi Kawin' => 'Dispensasi Kawin',
+                        'P3HP/Penetapan Ahli Waris' => 'P3HP/Penetapan Ahli Waris',
+                        'Perwalian' => 'Perwalian',
+                        'Perubahan Akta' => 'Perubahan Akta',
                     ])
                     ->required(),
                 Forms\Components\TextInput::make('penggugat')
@@ -85,6 +89,9 @@ class JurnalPerkaraResource extends Resource
                         'Penguasaan Anak' => 'success',
                         'Pengesahan Perkawinan/Istbat Nikah' => 'warning',
                         'Pembatalan Perkawinan' => 'danger',
+                        'Dispensasi Kawin' => 'info',
+                        'Perwalian' => 'info',
+                        'P3HP/Penetapan Ahli Waris' => 'info',
                         'Kewarisan' => 'info',
                     })
                     ->icon(fn ($state): string => match ($state) {
