@@ -4,6 +4,7 @@ namespace App\Models\Kepaniteraan;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Kepaniteraan\DataSaksi;
 
 class JurnalPerkara extends Model
 {
@@ -44,5 +45,10 @@ class JurnalPerkara extends Model
         // order by tahun 265/Pdt.G/2025/PA.Ntn tahun 2025 dan nomor perkara paling besar yaitu 265
             ->orderByRaw("CAST(SUBSTRING_INDEX(nomor_perkara, '/', 1) AS UNSIGNED) DESC")
             ->orderByRaw("CAST(SUBSTRING_INDEX(nomor_perkara, '/', -1) AS UNSIGNED) DESC");
+    }
+
+    public function dataSaksi()
+    {
+        return $this->hasMany(DataSaksi::class, 'jurnal_perkara_id', 'id');
     }
 }
