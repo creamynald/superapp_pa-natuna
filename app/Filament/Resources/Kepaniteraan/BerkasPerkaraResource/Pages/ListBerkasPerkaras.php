@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages;
 use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Widgets\ArsipPerkaraWidget;
 
 class ListBerkasPerkaras extends ListRecords
 {
@@ -18,6 +19,13 @@ class ListBerkasPerkaras extends ListRecords
                 ->color('primary')
                 ->label('Tambah Berkas Perkara')
                 ->modalHeading('Tambah Berkas Perkara'),
+        ];
+    }
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            ArsipPerkaraWidget::class,
         ];
     }
 }
