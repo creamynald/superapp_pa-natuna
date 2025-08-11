@@ -13,6 +13,7 @@ use Filament\Notifications\Notification;
 use Illuminate\Support\Str;
 use Filament\Forms;
 use Spatie\Permission\Models\Role;
+use App\Filament\Resources\Kesekretariatan\PegawaiResource\Widgets\PegawaiWidget;
 
 class ListPegawais extends ListRecords
 {
@@ -204,5 +205,11 @@ class ListPegawais extends ListRecords
                     ->openUrlInNewTab(),
 
             ];
+    }
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            PegawaiWidget::class,
+        ];
     }
 }
