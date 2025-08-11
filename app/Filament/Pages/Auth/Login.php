@@ -3,55 +3,66 @@
 namespace App\Filament\Pages\Auth;
 
 use Filament\Forms;
+use Filament\Forms\Components\TextInput;
+use Filament\Http\Responses\Auth\Contracts\LoginResponse;
 use Filament\Pages\Auth\Login as BaseLogin;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse; // <-- penting
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Employee;
 
 class Login extends BaseLogin
 {
-    protected function getForms(): array
+    /**
+     * Ubah komponen email bawaan supaya:
+     * - label: "Email atau NIP"
+     * - type: text (bukan email)
+     * - tanpa rule "email"
+     */
+    protected function getEmailFormComponent(): TextInput
     {
-        return [
-            'form' => $this->makeForm()->schema([
-                Forms\Components\TextInput::make('login')->label('Email atau NIP')->required(),
-                Forms\Components\TextInput::make('password')->password()->required(),
-                Forms\Components\Checkbox::make('remember'),
-            ]),
-        ];
+        // Boleh bangun sendiri, tanpa memanggil parent, supaya bersih dari rule bawaan
+        return TextInput::make('email')
+            ->label('Email atau NIP')
+            ->required()
+            ->type('text')         // HTML input type text (bukan email)
+            ->email(false)         // matikan validasi email otomatis Filament
+            ->rules(['required'])  // jangan pakai 'required|string' jadi satu
+            ->autocomplete('username')
+            ->autocapitalize('off');
     }
 
-    public function authenticate(): ?LoginResponse // <-- ubah tipe return
+    /**
+     * Auth: dukung email ATAU NIP (NIP di tabel pegawais)
+     */
+    public function authenticate(): ?LoginResponse
     {
-        $data = $this->form->getState();
-
-        $login    = trim($data['login'] ?? '');
-        $password = $data['password'] ?? '';
+        $data     = $this->form->getState();
+        $login    = trim((string) ($data['email'] ?? ''));   // tetap gunakan key 'email'
+        $password = (string) ($data['password'] ?? '');
         $remember = (bool) ($data['remember'] ?? false);
 
-        // 1) Login via email
+        // 1) Jika format email valid → login via kolom users.email
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             if (Auth::attempt(['email' => $login, 'password' => $password], $remember)) {
                 session()->regenerate();
-                return app(LoginResponse::class); // <-- bukan redirect()
+                return app(LoginResponse::class);
             }
 
-            $this->addError('login', __('auth.failed'));
+            $this->addError('email', __('auth.failed'));
             return null;
         }
 
-        // 2) Login via NIP
-        $employee = Employee::with('user')->where('nip', $login)->first();
+        // 2) Jika bukan email → anggap NIP; cari user lewat relasi Pegawai
+        $pegawai = \App\Models\Kesekretariatan\Pegawai::with('user')
+            ->where('nip', $login)
+            ->first();
 
-        if (! $employee || ! $employee->user || ! Hash::check($password, $employee->user->password)) {
-            $this->addError('login', __('auth.failed'));
-            return null;
+        if ($pegawai && $pegawai->user && Hash::check($password, $pegawai->user->password)) {
+            Auth::login($pegawai->user, $remember);
+            session()->regenerate();
+            return app(LoginResponse::class);
         }
 
-        Auth::login($employee->user, $remember);
-        session()->regenerate();
-
-        return app(LoginResponse::class); // <-- balikan yang benar
+        $this->addError('email', __('auth.failed'));
+        return null;
     }
 }

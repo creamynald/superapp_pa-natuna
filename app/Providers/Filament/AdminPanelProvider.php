@@ -27,9 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('mimin')
-            ->login(
-                Pages\Auth\Login::class,
-            )
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->colors([
                 'primary' => Color::Green,
             ])
