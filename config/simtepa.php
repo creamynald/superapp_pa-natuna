@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'token' => env('SIMTEPA_TOKEN', 'c51f86e55175331d47ef4d0b12533254'),
+    'token' => env('SIMTEPA_TOKEN', 'YOUR_SIMTEPA_TOKEN'),
     'base'  => 'https://simtepa.mahkamahagung.go.id/share',
 
     // endpoint json yang akan diambil
