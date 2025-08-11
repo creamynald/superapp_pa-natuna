@@ -115,9 +115,9 @@ class PegawaiResource extends Resource
                     ->label('Nama Pegawai')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.email')->label('Email Akun')->searchable(),
+                // Tables\Columns\TextColumn::make('user.email')->label('Email Akun')->searchable(),
                 Tables\Columns\TextColumn::make('jabatan')->searchable(),
-                Tables\Columns\TextColumn::make('created_at')->dateTime(),
+                // Tables\Columns\TextColumn::make('created_at')->dateTime(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
