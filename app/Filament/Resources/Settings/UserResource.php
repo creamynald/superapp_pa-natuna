@@ -44,16 +44,19 @@ class UserResource extends Resource
                     ->searchable(),
                 Forms\Components\TextInput::make('password')
                     ->password()
-                    ->required(fn (Forms\Get $get) => $get('id') === null)
-                    ->maxLength(255)
-                    ->label('Password'),
+                    ->revealable()
+                    ->label('Password')
+                    ->required(fn (string $operation): bool => $operation === 'create')
+                    ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->rule('confirmed'),
+
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
-                    ->same('password')
-                    ->required(fn (Forms\Get $get) => $get('id') === null)
-                    ->maxLength(255)
-                    ->label('Confirm Password'),
-                
+                    ->revealable()
+                    ->label('Confirm Password')
+                    ->dehydrated(false)
+                    ->required(fn (string $operation): bool => $operation === 'create'), 
             ]);
     }
 
