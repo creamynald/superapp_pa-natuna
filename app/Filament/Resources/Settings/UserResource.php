@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Components\TextInput;
 
 class UserResource extends Resource
 {
@@ -25,6 +26,8 @@ class UserResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $isSuper = auth()->user()?->hasRole('super_admin');
+
         return $form
             ->schema([
                 // with roles
@@ -36,12 +39,21 @@ class UserResource extends Resource
                     ->required()
                     ->email()       
                     ->maxLength(255)
+                    ->unique(ignoreRecord: true)
                     ->label('Email Address'),
                 Forms\Components\Select::make('roles')
                     ->relationship('roles', 'name')
-                    ->multiple()
+                     ->multiple()   
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->disabled(!$isSuper),
+                Forms\Components\TextInput::make('phone_number')
+                    ->tel()
+                    ->placeholder('08XXXXXXXXXX')
+                    ->rule('regex:/^(?:\+62|62|0)8[1-9][0-9]{6,10}$/')
+                    ->maxLength(20)
+                    ->label('Phone Number')
+                    ->required(fn (string $operation): bool => $operation === 'create'),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->revealable()
@@ -49,8 +61,7 @@ class UserResource extends Resource
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
-                    ->rule('confirmed'),
-
+                    ->rules(['nullable', 'confirmed']),
                 Forms\Components\TextInput::make('password_confirmation')
                     ->password()
                     ->revealable()

@@ -41,7 +41,6 @@ return new class extends Migration
                 });
             }
         }
-=
         if (Schema::hasColumn('berkas_perkaras', 'nomor_perkara')) {
             Schema::table('berkas_perkaras', function (Blueprint $table) {
                 $table->dropColumn('nomor_perkara');
