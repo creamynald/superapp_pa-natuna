@@ -2,10 +2,14 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\frontend\pegawaiController;
 
 Route::get('/', function () {
     return view('maintenance');
 });
+
+Route::get('pegawai', [pegawaiController::class, 'index'])
+    ->name('pegawai.index');
 
 Route::get('/test-fonnte', function () {
     $response = Http::withHeaders([

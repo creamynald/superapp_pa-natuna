@@ -195,6 +195,14 @@ class ListPegawais extends ListRecords
                         ->send();
                 })
                 ->requiresConfirmation(), // tetap minta konfirmasi awal
-        ];
+        
+                Actions\Action::make('lihat-publik')
+                    ->label('Lihat Halaman Publik')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->color('info')
+                    ->url(fn () => route('pegawai.index'), true) // true = absolute URL
+                    ->openUrlInNewTab(),
+
+            ];
     }
 }
