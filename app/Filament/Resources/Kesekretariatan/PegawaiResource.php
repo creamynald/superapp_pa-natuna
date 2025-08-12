@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use RyanChandler\FilamentProgressColumn\ProgressColumn;
 
 class PegawaiResource extends Resource
 {
@@ -122,6 +123,15 @@ class PegawaiResource extends Resource
                 // Tables\Columns\TextColumn::make('user.email')->label('Email Akun')->searchable(),
                 Tables\Columns\TextColumn::make('jabatan')->searchable(),
                 // Tables\Columns\TextColumn::make('created_at')->dateTime(),
+                ProgressColumn::make('progress_kelengkapan')
+                    ->label('Kelengkapan')
+                    ->color(fn ($state) => match (true) {
+                        $state < 60  => 'danger',   // merah (marah)
+                        $state < 80  => 'warning',  // kuning
+                        $state >= 90 => 'success',  // hijau
+                        default      => 'primary',  // default (biru)
+                    })
+                    ->sortable(false)
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
