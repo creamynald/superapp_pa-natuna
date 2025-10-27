@@ -31,7 +31,7 @@ class PegawaiResource extends Resource
     protected static ?string $model = Pegawai::class;
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
-    protected static string | \UnitEnum | null $navigationGroup = 'Umum';
+    protected static string | \UnitEnum | null $navigationGroup = 'Kesekretariatan';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Data Pegawai';
     protected static ?string $recordTitleAttribute = 'nip';

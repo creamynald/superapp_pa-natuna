@@ -84,6 +84,11 @@ class AdminPanelProvider extends PanelProvider
                         'sm' => 2,
                     ]),
             ])
+             ->navigationGroups([
+                'Kesekretariatan',
+                'Kepaniteraan',
+                'Settings',
+            ])
             ->authMiddleware([
                 Authenticate::class,
             ]);
