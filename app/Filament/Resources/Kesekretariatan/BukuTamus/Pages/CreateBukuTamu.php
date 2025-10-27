@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Filament\Resources\Kesekretariatan\BukuTamuResource\Pages;
+namespace App\Filament\Resources\Kesekretariatan\BukuTamus\Pages;
 
-use App\Filament\Resources\Kesekretariatan\BukuTamuResource;
-use Filament\Actions;
+use App\Filament\Resources\Kesekretariatan\BukuTamus\BukuTamuResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateBukuTamu extends CreateRecord

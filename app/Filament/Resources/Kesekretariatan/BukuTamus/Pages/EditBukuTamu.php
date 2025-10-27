@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Filament\Resources\Kesekretariatan\BukuTamuResource\Pages;
+namespace App\Filament\Resources\Kesekretariatan\BukuTamus\Pages;
 
+use App\Filament\Resources\Kesekretariatan\BukuTamus\BukuTamuResource;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\Action;
-use App\Filament\Resources\Kesekretariatan\BukuTamuResource;
-use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Auth;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 
 class EditBukuTamu extends EditRecord
