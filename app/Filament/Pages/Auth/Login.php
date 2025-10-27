@@ -21,7 +21,7 @@ class Login extends \Filament\Auth\Pages\Login
     {
         // Boleh bangun sendiri, tanpa memanggil parent, supaya bersih dari rule bawaan
         return TextInput::make('email')
-            ->label('Email atau NIP')
+            ->label('NIP')
             ->required()
             ->type('text')         // HTML input type text (bukan email)
             ->email(false)         // matikan validasi email otomatis Filament
