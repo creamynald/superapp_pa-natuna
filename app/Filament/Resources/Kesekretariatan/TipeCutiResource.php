@@ -65,26 +65,6 @@ class TipeCutiResource extends Resource
             TextColumn::make('default_quota_days')
                 ->label('Kuota/Tahun')
                 ->formatStateUsing(fn ($state) => is_null($state) ? 'Tak terbatas' : $state.' hari'),
-
-            TextColumn::make('remaining_quota_for_current_user')
-                ->label('Sisa Cuti (tahun ini)')
-                ->state(function (TipeCuti $record) {
-                    $allowed = $record->default_quota_days;
-                    if (is_null($allowed)) {
-                        return null; // akan diformat jadi "Tak terbatas"
-                    }
-
-                    $used = PermohonanCuti::query()
-                        ->where('user_id', auth()->id())
-                        ->where('leave_type_id', $record->id)
-                        ->whereYear('start_date', now()->year)
-                        ->where('status', 'final_approved')
-                        ->sum('duration_days');
-
-                    return max(0, (int)$allowed - (int)$used);
-                })
-                ->formatStateUsing(fn ($state) => is_null($state) ? 'Tak terbatas' : $state.' hari')
-                ->sortable(),
         ])
         ->filters([
             //
