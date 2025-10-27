@@ -2,11 +2,18 @@
 
 namespace App\Filament\Resources\Kepaniteraan;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Pages\ListJurnalPerkaras;
+use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Pages\EditJurnalPerkara;
 use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\Pages;
 use App\Filament\Resources\Kepaniteraan\JurnalPerkaraResource\RelationManagers;
 use App\Models\Kepaniteraan\JurnalPerkara;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,8 +28,8 @@ class JurnalPerkaraResource extends Resource
 {
     protected static ?string $model = JurnalPerkara::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
-    protected static ?string $navigationGroup = 'Kepaniteraan';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \UnitEnum | null $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 1;
     protected static ?string $label = 'Jurnal Perkara';
     protected static ?string $pluralLabel = 'Jurnal Perkara';
@@ -34,15 +41,15 @@ class JurnalPerkaraResource extends Resource
         ];
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('nomor_perkara')
+        return $schema
+            ->components([
+                TextInput::make('nomor_perkara')
                     ->label('Nomor Perkara')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('klasifikasi_perkara')
+                Select::make('klasifikasi_perkara')
                     ->label('Klasifikasi Perkara')
                     ->options([
                         'Cerai Gugat' => 'Cerai Gugat',
@@ -57,15 +64,15 @@ class JurnalPerkaraResource extends Resource
                         'Perubahan Akta' => 'Perubahan Akta',
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('penggugat')
+                TextInput::make('penggugat')
                     ->label('Penggugat')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('tergugat')
+                TextInput::make('tergugat')
                     ->label('Tergugat')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('proses_terakhir')
+                TextInput::make('proses_terakhir')
                     ->label('Proses Terakhir')
                     ->required()
                     ->maxLength(255),
@@ -76,11 +83,11 @@ class JurnalPerkaraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nomor_perkara')
+                TextColumn::make('nomor_perkara')
                     ->label('Nomor Perkara')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('klasifikasi_perkara')
+                TextColumn::make('klasifikasi_perkara')
                     ->label('Klasifikasi Perkara')
                     ->badge()
                     ->color(fn ($state) => match ($state) {
@@ -109,17 +116,17 @@ class JurnalPerkaraResource extends Resource
                         'Kewarisan' => 'heroicon-m-gift',
                         default => 'heroicon-m-document-text',
                     }),
-                Tables\Columns\TextColumn::make('penggugat')
+                TextColumn::make('penggugat')
                     ->label('Penggugat')
                     ->limit(25),
-                Tables\Columns\TextColumn::make('tergugat')
+                TextColumn::make('tergugat')
                     ->label('Tergugat'),
-                Tables\Columns\TextColumn::make('proses_terakhir')
+                TextColumn::make('proses_terakhir')
                     ->label('Proses Terakhir'),
             ])
             ->modifyQueryUsing(fn ($query) => $query->latestPerkara())
             ->filters([
-                Tables\Filters\SelectFilter::make('klasifikasi_perkara')
+                SelectFilter::make('klasifikasi_perkara')
                     ->options([
                         'Cerai Gugat' => 'Cerai Gugat',
                         'Cerai Talak' => 'Cerai Talak',
@@ -129,7 +136,7 @@ class JurnalPerkaraResource extends Resource
                         'Kewarisan' => 'Kewarisan',
                     ]),
                     // filter tahun from 'nomor_perkara' etc. 107/Pdt.G/2025/PA.Ntn get 2025
-                Tables\Filters\SelectFilter::make('nomor_perkara')
+                SelectFilter::make('nomor_perkara')
                     ->label('Tahun Perkara')
                     ->options(function () {
                         return JurnalPerkara::query()
@@ -147,11 +154,11 @@ class JurnalPerkaraResource extends Resource
                     )),
                 
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
@@ -167,9 +174,9 @@ class JurnalPerkaraResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListJurnalPerkaras::route('/'),
+            'index' => ListJurnalPerkaras::route('/'),
             // 'create' => Pages\CreateJurnalPerkara::route('/create'),
-            'edit' => Pages\EditJurnalPerkara::route('/{record}/edit'),
+            'edit' => EditJurnalPerkara::route('/{record}/edit'),
         ];
     }
 }

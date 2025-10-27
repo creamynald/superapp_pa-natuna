@@ -2,12 +2,20 @@
 
 namespace App\Filament\Resources\Settings;
  
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Settings\UserResource\Pages\ListUsers;
+use App\Filament\Resources\Settings\UserResource\Pages\CreateUser;
+use App\Filament\Resources\Settings\UserResource\Pages\EditUser;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use App\Filament\Resources\Settings\UserResource\Pages;
 use App\Filament\Resources\Settings\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,42 +27,42 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Settings';
-    protected static ?int $navigationSort = 999999;
+    protected static string | \UnitEnum | null $navigationGroup = 'Settings';
+    protected static ?int $navigationSort = 999999999999999;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         $isSuper = auth()->user()?->hasRole('super_admin');
 
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // with roles
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->label('Full Name'),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->required()
                     ->email()       
                     ->maxLength(255)
                     ->unique(ignoreRecord: true)
                     ->label('Email Address'),
-                Forms\Components\Select::make('roles')
+                Select::make('roles')
                     ->relationship('roles', 'name')
                      ->multiple()   
                     ->preload()
                     ->searchable()
                     ->disabled(!$isSuper),
-                Forms\Components\TextInput::make('phone_number')
+                TextInput::make('phone_number')
                     ->tel()
                     ->placeholder('08XXXXXXXXXX')
                     ->rule('regex:/^(?:\+62|62|0)8[1-9][0-9]{6,10}$/')
                     ->maxLength(20)
                     ->label('Phone Number')
                     ->required(fn (string $operation): bool => $operation === 'create'),
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->revealable()
                     ->label('Password')
@@ -62,7 +70,7 @@ class UserResource extends Resource
                     ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                     ->dehydrated(fn ($state) => filled($state))
                     ->rules(['nullable', 'confirmed']),
-                Forms\Components\TextInput::make('password_confirmation')
+                TextInput::make('password_confirmation')
                     ->password()
                     ->revealable()
                     ->label('Confirm Password')
@@ -75,27 +83,27 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('roles.name')
+                TextColumn::make('roles.name')
                     ->label('Role')
                     ->badge(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime() 
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -110,9 +118,9 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

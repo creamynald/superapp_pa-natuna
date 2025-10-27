@@ -2,6 +2,13 @@
 
 namespace App\Filament\Resources\Kesekretariatan\PegawaiResource\Pages;
 
+use Filament\Actions\CreateAction;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
+use Filament\Schemas\Schema;
 use App\Filament\Resources\Kesekretariatan\PegawaiResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -22,29 +29,29 @@ class ListPegawais extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make('create')
+            CreateAction::make('create')
                 ->label('Tambah Pegawai')
                 ->icon('heroicon-o-plus'),
 
-            Actions\Action::make('sync-simtepa')
+            Action::make('sync-simtepa')
                 ->label('Sinkron dari SIMTEPA')
                 ->color('warning')
                 ->icon('heroicon-o-cloud-arrow-down')
                 ->modalHeading('Ambil & perbarui data pegawai dari SIMTEPA')
                 ->modalWidth('max-w-7xl')
                 ->modalSubheading('Sinkronisasi ini akan mengambil data pegawai dari SIMTEPA dan memperbarui data yang ada di sistem.')
-                ->form([
-                    Forms\Components\Hidden::make('__all_items'),
-                    Forms\Components\Repeater::make('missing_nips')
+                ->schema([
+                    Hidden::make('__all_items'),
+                    Repeater::make('missing_nips')
                         ->label('Lengkapi NIP yang belum tersedia')
                         ->schema([
-                            Forms\Components\TextInput::make('nip')
+                            TextInput::make('nip')
                                 ->label('NIP')->required()
                                 ->rule('regex:/^\d{8,}$/')
                                 ->helperText('Masukkan angka NIP (min 8 digit)'),
-                            Forms\Components\TextInput::make('nama')
+                            TextInput::make('nama')
                                 ->label('Nama')->disabled()->dehydrated(true),
-                            Forms\Components\TextInput::make('tanggal_lahir')
+                            TextInput::make('tanggal_lahir')
                                 ->label('Tgl Lahir')->disabled()->dehydrated(true),
                         ])
                         ->columns(3)
@@ -52,10 +59,10 @@ class ListPegawais extends ListRecords
                         ->deletable(false)
                         ->reorderable(false)
                         ->visible(fn ($get) => !empty($get('missing_nips'))),
-                    Forms\Components\Placeholder::make('info')
+                    Placeholder::make('info')
                         ->content('Jika daftar di atas kosong, berarti semua data sudah punya NIP.'),
                 ])
-                ->mountUsing(function (Actions\Action $action, Forms\ComponentContainer $form) {
+                ->mountUsing(function (Action $action, Schema $schema) {
                     $service = new SimtepaSyncService();
                     $items = $service->fetchAll();
 
@@ -103,7 +110,7 @@ class ListPegawais extends ListRecords
                         }
                     }
 
-                    $form->fill([
+                    $schema->fill([
                         '__all_items'  => json_encode($items),
                         'missing_nips' => $missing,
                     ]);
@@ -219,7 +226,7 @@ class ListPegawais extends ListRecords
                 })
                 ->requiresConfirmation(),
 
-            Actions\Action::make('lihat-publik')
+            Action::make('lihat-publik')
                 ->label('Lihat Halaman Publik')
                 ->icon('heroicon-o-arrow-top-right-on-square')
                 ->color('info')

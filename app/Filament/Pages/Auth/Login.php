@@ -2,14 +2,14 @@
 
 namespace App\Filament\Pages\Auth;
 
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use App\Models\Kesekretariatan\Pegawai;
 use Filament\Forms;
 use Filament\Forms\Components\TextInput;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use Filament\Pages\Auth\Login as BaseLogin;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
-class Login extends BaseLogin
+class Login extends \Filament\Auth\Pages\Login
 {
     /**
      * Ubah komponen email bawaan supaya:
@@ -52,7 +52,7 @@ class Login extends BaseLogin
         }
 
         // 2) Jika bukan email → anggap NIP; cari user lewat relasi Pegawai
-        $pegawai = \App\Models\Kesekretariatan\Pegawai::with('user')
+        $pegawai = Pegawai::with('user')
             ->where('nip', $login)
             ->first();
 

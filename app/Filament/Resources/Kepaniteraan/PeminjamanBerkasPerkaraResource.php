@@ -2,11 +2,24 @@
 
 namespace App\Filament\Resources\Kepaniteraan;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\Pages\ListPeminjamanBerkasPerkaras;
+use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\Pages\CreatePeminjamanBerkasPerkara;
+use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\Pages\EditPeminjamanBerkasPerkara;
+use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\RelationManagers\PeminjamanRelationManager;
 use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\Pages;
 use App\Filament\Resources\Kepaniteraan\PeminjamanBerkasPerkaraResource\RelationManagers;
 use App\Models\Kepaniteraan\PeminjamanBerkasPerkara;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -16,12 +29,12 @@ use Illuminate\Support\Facades\Auth;
 
 class PeminjamanBerkasPerkaraResource extends Resource
 {
-    protected static ?string $navigationGroup = 'Kepaniteraan';
+    protected static string | \UnitEnum | null $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Peminjaman Berkas Perkara';
     protected static ?string $model = PeminjamanBerkasPerkara::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationParentItem = 'Arsip Perkara';
     protected static ?string $label = 'Peminjaman';
@@ -32,11 +45,11 @@ class PeminjamanBerkasPerkaraResource extends Resource
         return static::getModel()::count();
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('berkas_perkara_id')
+        return $schema
+            ->components([
+                Select::make('berkas_perkara_id')
                 ->label('Berkas Perkara')
                 ->relationship('berkas', 'nomor_perkara')
                 ->required()
@@ -44,25 +57,25 @@ class PeminjamanBerkasPerkaraResource extends Resource
                 ->preload(),
 
             // Hidden field untuk user_id
-            Forms\Components\Hidden::make('user_id')
+            Hidden::make('user_id')
                 ->default(Auth::id()),
 
             // Placeholder untuk menampilkan nama peminjam (opsional)
-            Forms\Components\Placeholder::make('peminjam')
+            Placeholder::make('peminjam')
                 ->label('Peminjam')
                 ->content(fn ($record): string => $record?->user?->name ?? Auth::user()?->name ?? '-')
                 ->visibleOn(['view', 'edit']),
 
-            Forms\Components\TextInput::make('keperluan')
+            TextInput::make('keperluan')
                 ->label('Keperluan')
                 ->required(),
 
-            Forms\Components\DatePicker::make('tanggal_pinjam')
+            DatePicker::make('tanggal_pinjam')
                 ->label('Tanggal Pinjam')
                 ->default(now())
                 ->required(),
 
-            Forms\Components\DatePicker::make('tanggal_kembali')
+            DatePicker::make('tanggal_kembali')
                 ->label('Tanggal Kembali'),
             ]);
     }
@@ -71,38 +84,38 @@ class PeminjamanBerkasPerkaraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('berkas.nomor_perkara')
+                TextColumn::make('berkas.nomor_perkara')
                     ->label('Nomor Perkara')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('Peminjam')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tanggal_pinjam')
+                TextColumn::make('tanggal_pinjam')
                     ->date()
                     ->label('Tanggal Pinjam')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tanggal_kembali')
+                TextColumn::make('tanggal_kembali')
                     ->date()
                     ->label('Tanggal Kembali')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('keperluan')
+                TextColumn::make('keperluan')
                     ->label('Keperluan'),
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -117,16 +130,16 @@ class PeminjamanBerkasPerkaraResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPeminjamanBerkasPerkaras::route('/'),
-            'create' => Pages\CreatePeminjamanBerkasPerkara::route('/create'),
-            'edit' => Pages\EditPeminjamanBerkasPerkara::route('/{record}/edit'),
+            'index' => ListPeminjamanBerkasPerkaras::route('/'),
+            'create' => CreatePeminjamanBerkasPerkara::route('/create'),
+            'edit' => EditPeminjamanBerkasPerkara::route('/{record}/edit'),
         ];
     }
 
     public static function relationManagers(): array
     {
         return [
-            RelationManagers\PeminjamanRelationManager::class,
+            PeminjamanRelationManager::class,
         ];
     }
 }

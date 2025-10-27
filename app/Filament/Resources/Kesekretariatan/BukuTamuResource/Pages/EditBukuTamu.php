@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Kesekretariatan\BukuTamuResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use Filament\Actions\Action;
 use App\Filament\Resources\Kesekretariatan\BukuTamuResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -15,7 +17,7 @@ class EditBukuTamu extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(
+            DeleteAction::make(
                 'delete')
                 ->label('Hapus')
                 ->icon('heroicon-o-trash')
@@ -30,7 +32,7 @@ class EditBukuTamu extends EditRecord
                     $this->redirect(BukuTamuResource::getUrl('index'));
                 }
             ),
-            Actions\Action::make('leave')
+            Action::make('leave')
                 ->label('Pulang')
                 ->icon('heroicon-o-arrow-right-start-on-rectangle')
                 ->requiresConfirmation()

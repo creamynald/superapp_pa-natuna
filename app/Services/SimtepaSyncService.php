@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Log;
+use Throwable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Arr;
 use Illuminate\Http\Client\RequestException;
@@ -28,19 +30,19 @@ class SimtepaSyncService
                     ->get($url);
 
                 if ($resp->status() >= 500) {
-                    \Log::warning("SIMTEPA {$path} HTTP {$resp->status()}", ['url' => $url, 'body' => $resp->body()]);
+                    Log::warning("SIMTEPA {$path} HTTP {$resp->status()}", ['url' => $url, 'body' => $resp->body()]);
                     continue;
                 }
 
                 if ($resp->failed()) {
-                    \Log::warning("SIMTEPA {$path} failed HTTP {$resp->status()}", ['url' => $url, 'body' => $resp->body()]);
+                    Log::warning("SIMTEPA {$path} failed HTTP {$resp->status()}", ['url' => $url, 'body' => $resp->body()]);
                     continue;
                 }
 
                 $json = $resp->json();
 
                 if (!is_array($json)) {
-                    \Log::warning("SIMTEPA {$path} non-JSON response", ['url' => $url, 'snippet' => substr($resp->body(), 0, 200)]);
+                    Log::warning("SIMTEPA {$path} non-JSON response", ['url' => $url, 'snippet' => substr($resp->body(), 0, 200)]);
                     continue;
                 }
 
@@ -55,10 +57,10 @@ class SimtepaSyncService
                     }
                 }
             } catch (RequestException $e) {
-                \Log::error("SIMTEPA {$path} request exception: {$e->getMessage()}", ['url' => $url]);
+                Log::error("SIMTEPA {$path} request exception: {$e->getMessage()}", ['url' => $url]);
                 continue;
-            } catch (\Throwable $e) {
-                \Log::error("SIMTEPA {$path} unexpected error: {$e->getMessage()}", ['url' => $url]);
+            } catch (Throwable $e) {
+                Log::error("SIMTEPA {$path} unexpected error: {$e->getMessage()}", ['url' => $url]);
                 continue;
             }
         }
@@ -106,7 +108,7 @@ class SimtepaSyncService
         if (empty($val)) return null;
         try {
             return Carbon::parse($val)->toDateString();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             return null;
         }
     }

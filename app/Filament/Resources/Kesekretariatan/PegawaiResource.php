@@ -2,11 +2,23 @@
 
 namespace App\Filament\Resources\Kesekretariatan;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\Kesekretariatan\PegawaiResource\Pages\ListPegawais;
+use App\Filament\Resources\Kesekretariatan\PegawaiResource\Pages\CreatePegawai;
+use App\Filament\Resources\Kesekretariatan\PegawaiResource\Pages\EditPegawai;
 use App\Filament\Resources\Kesekretariatan\PegawaiResource\Pages;
 use App\Filament\Resources\Kesekretariatan\PegawaiResource\RelationManagers;
 use App\Models\Kesekretariatan\Pegawai;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,36 +30,39 @@ class PegawaiResource extends Resource
 {
     protected static ?string $model = Pegawai::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
-    protected static ?string $navigationGroup = 'Umum';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
+    protected static string | \UnitEnum | null $navigationGroup = 'Umum';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Data Pegawai';
     protected static ?string $recordTitleAttribute = 'nip';
     protected static ?string $pluralModelLabel = 'Data Pegawai';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Data Pegawai')
+        return $schema
+            ->components([
+                Section::make('Data Pegawai')
                 ->description('Isi data pegawai dengan lengkap dan benar.')
                 ->schema([
-                    Forms\Components\TextInput::make('nip')
+                    TextInput::make('nip')
                         ->label('Nomor Induk Pegawai (NIP)')
                         ->required()
                         ->unique(ignoreRecord: true),
 
-                    Forms\Components\TextInput::make('user.name')
+                    TextInput::make('user.name')
                         ->label('Nama Pegawai')
                         ->required()
                         ->maxLength(255)
                         ->reactive()
-                        ->afterStateUpdated(function (Forms\Components\TextInput $component, $state) {
-                            $component->getRecord()->user->name = $state;
-                            $component->getRecord()->user->save();
+                        ->afterStateUpdated(function ($state, ?\App\Models\Kesekretariatan\Pegawai $record) {
+                            if (! $record || ! $record->user) {
+                                // Belum ada record/relasi saat create, jangan apa-apa
+                                return;
+                            }
+                            $record->user->update(['name' => $state]);
                         }),
 
-                    Forms\Components\Select::make('pangkat_golongan')
+                    Select::make('pangkat_golongan')
                         ->label('Pangkat/Golongan')
                         ->options([
                             'Ia' => 'I/a',
@@ -69,7 +84,7 @@ class PegawaiResource extends Resource
                             'IVe' => 'IV/e',
                         ])->required(),
 
-                    Forms\Components\Select::make('jabatan')
+                    Select::make('jabatan')
                         ->label('Jabatan')
                         ->options([
                             'Ketua' => 'Ketua',
@@ -94,19 +109,19 @@ class PegawaiResource extends Resource
                         ])->required(),
                     
 
-                    Forms\Components\TextInput::make('tempat_lahir'),
-                    Forms\Components\DatePicker::make('tanggal_lahir'),
+                    TextInput::make('tempat_lahir'),
+                    DatePicker::make('tanggal_lahir'),
 
-                    Forms\Components\DatePicker::make('tmt_golongan'),
-                    Forms\Components\DatePicker::make('tmt_pegawai'),
+                    DatePicker::make('tmt_golongan'),
+                    DatePicker::make('tmt_pegawai'),
 
-                    Forms\Components\TextInput::make('pendidikan_terakhir'),
-                    Forms\Components\TextInput::make('tahun_pendidikan')->numeric()->minValue(1900)->maxValue((int) date('Y')),
+                    TextInput::make('pendidikan_terakhir'),
+                    TextInput::make('tahun_pendidikan')->numeric()->minValue(1900)->maxValue((int) date('Y')),
 
-                    Forms\Components\DatePicker::make('kgb_yad')
+                    DatePicker::make('kgb_yad')
                         ->label('KGB YAD')
                         ->helperText('Kenaikan Gaji Berkala Yang Akan Datang'),
-                    Forms\Components\Textarea::make('keterangan'),
+                    Textarea::make('keterangan'),
                 ])->columns(2),
             ]);
     }
@@ -115,13 +130,13 @@ class PegawaiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('nip')->searchable()->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('nip')->searchable()->sortable(),
+                TextColumn::make('user.name')
                     ->label('Nama Pegawai')
                     ->searchable()
                     ->sortable(),
                 // Tables\Columns\TextColumn::make('user.email')->label('Email Akun')->searchable(),
-                Tables\Columns\TextColumn::make('jabatan')->searchable(),
+                TextColumn::make('jabatan')->searchable(),
                 // Tables\Columns\TextColumn::make('created_at')->dateTime(),
                 ProgressColumn::make('progress_kelengkapan')
                     ->label('Kelengkapan')
@@ -133,12 +148,12 @@ class PegawaiResource extends Resource
                     })
                     ->sortable(false)
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -153,9 +168,9 @@ class PegawaiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPegawais::route('/'),
-            'create' => Pages\CreatePegawai::route('/create'),
-            'edit' => Pages\EditPegawai::route('/{record}/edit'),
+            'index' => ListPegawais::route('/'),
+            'create' => CreatePegawai::route('/create'),
+            'edit' => EditPegawai::route('/{record}/edit'),
         ];
     }
 }

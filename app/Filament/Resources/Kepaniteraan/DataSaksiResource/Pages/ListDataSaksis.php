@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources\Kepaniteraan\DataSaksiResource\Pages;
 
+use Filament\Schemas\Components\Wizard\Step;
+use Filament\Schemas\Components\Grid;
+use Filament\Support\Enums\Width;
 use App\Filament\Resources\Kepaniteraan\DataSaksiResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Wizard\Step;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Actions\Action;
 use App\Models\Kepaniteraan\DataSaksi;
-use Filament\Support\Enums\MaxWidth;
 use Filament\Forms\Components\TextSelect;
 use App\Models\Kepaniteraan\JurnalPerkara;
 
@@ -441,7 +441,7 @@ class ListDataSaksis extends ListRecords
                     $dariPihak = $data['dari_pihak'];
 
                     // Simpan Saksi 1
-                    \App\Models\Kepaniteraan\DataSaksi::create([
+                    DataSaksi::create([
                         'jurnal_perkara_id' => $nomorPerkara,
                         'dari_pihak' => $dariPihak,
                         'nik' => $data['nik'],
@@ -470,7 +470,7 @@ class ListDataSaksis extends ListRecords
                     ]);
 
                     // Simpan Saksi 2 (field sama, tapi nilai berbeda)
-                    \App\Models\Kepaniteraan\DataSaksi::create([
+                    DataSaksi::create([
                         'jurnal_perkara_id' => $nomorPerkara,
                         'dari_pihak' => $dariPihak,
                         'nik' => $data['nik2'],
@@ -502,7 +502,7 @@ class ListDataSaksis extends ListRecords
                 ->modalHeading('Tambah Data Saksi')
                 ->modalSubmitActionLabel('Simpan Data Saksi')
                 ->modalCancelActionLabel('Batal')
-                ->modalWidth(MaxWidth::FiveExtraLarge)
+                ->modalWidth(Width::FiveExtraLarge)
                 ->modalDescription('Isi data saksi dengan lengkap dan benar. Pastikan semua informasi yang diberikan akurat dan sesuai dengan dokumen resmi. Setelah disimpan, data tidak dapat diubah lagi.'), 
         ];
     }

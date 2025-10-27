@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -14,7 +15,7 @@ class ListBerkasPerkaras extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->icon('heroicon-o-plus-circle')
                 ->color('primary')
                 ->label('Tambah Arsip Perkara')

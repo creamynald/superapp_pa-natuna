@@ -2,6 +2,7 @@
 
 namespace App\Models\Kepaniteraan;
 
+use Database\Factories\Kepaniteraan\BerkasPerkaraFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BerkasPerkara extends Model
 {
-    /** @use HasFactory<\Database\Factories\Kepaniteraan\BerkasPerkaraFactory> */
+    /** @use HasFactory<BerkasPerkaraFactory> */
     use HasFactory;
 
     protected $fillable = [

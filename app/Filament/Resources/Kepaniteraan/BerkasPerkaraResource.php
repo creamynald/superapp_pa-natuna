@@ -2,11 +2,21 @@
 
 namespace App\Filament\Resources\Kepaniteraan;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\DatePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages\ListBerkasPerkaras;
+use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages\CreateBerkasPerkara;
+use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages\EditBerkasPerkara;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
 use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\Pages;
 use App\Filament\Resources\Kepaniteraan\BerkasPerkaraResource\RelationManagers;
 use App\Models\Kepaniteraan\BerkasPerkara;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -16,8 +26,6 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Support\HtmlString;
 use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
@@ -26,7 +34,7 @@ use App\Models\Kepaniteraan\JurnalPerkara;
 
 class BerkasPerkaraResource extends Resource
 {
-    protected static ?string $navigationGroup = 'Kepaniteraan';
+    protected static string | \UnitEnum | null $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Arsip Perkara';
 
@@ -35,12 +43,12 @@ class BerkasPerkaraResource extends Resource
 
     protected static ?string $model = BerkasPerkara::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Select::make('jurnal_perkara_id')
                     ->label('Nomor Perkara')
                     ->required()
@@ -58,17 +66,17 @@ class BerkasPerkaraResource extends Resource
                     })
                     ->reactive()
                     ->afterStateUpdated(fn (callable $set) => $set('dari_pihak', null)), // reset dari_pihak jika ganti perkara
-                Forms\Components\DatePicker::make('tanggal_masuk')
+                DatePicker::make('tanggal_masuk')
                     ->label('Tanggal Arsip')
                     ->required(),
-                Forms\Components\Select::make('status')
+                Select::make('status')
                     ->label('Status')
                     ->options([
                         'tersedia' => 'Tersedia',
                         'dipinjam' => 'Dipinjam',
                     ])
                     ->default('tersedia'),
-                Forms\Components\TextInput::make('lokasi')
+                TextInput::make('lokasi')
                     ->label('Lokasi')
                     ->nullable()
                     ->maxLength(255),
@@ -79,10 +87,10 @@ class BerkasPerkaraResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('jurnalPerkara.nomor_perkara')
+                TextColumn::make('jurnalPerkara.nomor_perkara')
                     ->label('Nomor Perkara')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -108,21 +116,21 @@ class BerkasPerkaraResource extends Resource
                         return $state;
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_masuk')
+                TextColumn::make('tanggal_masuk')
                     ->label('Tanggal Arsip')
                     ->date(),
             ])->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'tersedia' => 'Tersedia',
                         'dipinjam' => 'Dipinjam',
                     ]),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
+            ->toolbarActions([
+                BulkActionGroup::make([
                     // Tables\Actions\DeleteBulkAction::make(),
                     // FilamentExportBulkAction::make('Export')
                     // ->extraViewData([
@@ -148,9 +156,9 @@ class BerkasPerkaraResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListBerkasPerkaras::route('/'),
-            'create' => Pages\CreateBerkasPerkara::route('/create'),
-            'edit' => Pages\EditBerkasPerkara::route('/{record}/edit'),
+            'index' => ListBerkasPerkaras::route('/'),
+            'create' => CreateBerkasPerkara::route('/create'),
+            'edit' => EditBerkasPerkara::route('/{record}/edit'),
         ];
     }
 

@@ -2,11 +2,16 @@
 
 namespace App\Filament\Resources\Kepaniteraan;
 
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\EditAction;
+use App\Filament\Resources\Kepaniteraan\DataSaksiResource\Pages\ListDataSaksis;
+use App\Filament\Resources\Kepaniteraan\DataSaksiResource\Pages\CreateDataSaksi;
+use App\Filament\Resources\Kepaniteraan\DataSaksiResource\Pages\EditDataSaksi;
 use App\Filament\Resources\Kepaniteraan\DataSaksiResource\Pages;
 use App\Filament\Resources\Kepaniteraan\DataSaksiResource\RelationManagers;
 use App\Models\Kepaniteraan\DataSaksi;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -23,8 +28,8 @@ class DataSaksiResource extends Resource
 {
     protected static ?string $model = DataSaksi::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-    protected static ?string $navigationGroup = 'Kepaniteraan';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-users';
+    protected static string | \UnitEnum | null $navigationGroup = 'Kepaniteraan';
     protected static ?int $navigationSort = 2;  
     protected static ?string $navigationLabel = 'Data Saksi';
 
@@ -41,10 +46,10 @@ class DataSaksiResource extends Resource
     {
         return false; // karena semua input lewat header action
     }
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Forms\Components\TextInput::make('nama_lengkap')
             ]);
     }
@@ -53,7 +58,7 @@ class DataSaksiResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('jurnalPerkara.nomor_perkara')
+                TextColumn::make('jurnalPerkara.nomor_perkara')
                     ->label('Nomor Perkara')
                     ->searchable()
                     ->sortable(),
@@ -71,7 +76,7 @@ class DataSaksiResource extends Resource
                 //         default => 'default',
                 //     }),
                 // ]),
-                 Tables\Columns\TextColumn::make('nama_lengkap')
+                 TextColumn::make('nama_lengkap')
                     ->label('Nama Saksi')
                     ->formatStateUsing(fn (DataSaksi $record): string => "
                         <div>
@@ -86,7 +91,7 @@ class DataSaksiResource extends Resource
                         </div>
                     ")
                     ->html(),
-                Tables\Columns\TextColumn::make('jenis_kelamin')
+                TextColumn::make('jenis_kelamin')
                     ->label('Jenis Kelamin')
                     ->searchable()
                     ->badge()
@@ -104,9 +109,9 @@ class DataSaksiResource extends Resource
                         'published' => 'Published',
                     ])
             ])
-            ->actions([
+            ->recordActions([
                 // Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
             ->headerActions([
                 // Tables\Actions\CreateAction::make(),
@@ -138,9 +143,9 @@ class DataSaksiResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDataSaksis::route('/'),
-            'create' => Pages\CreateDataSaksi::route('/create'),
-            'edit' => Pages\EditDataSaksi::route('/{record}/edit'),
+            'index' => ListDataSaksis::route('/'),
+            'create' => CreateDataSaksi::route('/create'),
+            'edit' => EditDataSaksi::route('/{record}/edit'),
         ];
     }
 }

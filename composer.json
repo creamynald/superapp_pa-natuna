@@ -7,18 +7,19 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "alperenersoy/filament-export": "^3.0",
-        "bezhansalleh/filament-shield": "^3.3",
-        "eightynine/filament-excel-import": "^3.1",
-        "filament/filament": "^3.3",
-        "filament/widgets": "^3.3",
+        "alperenersoy/filament-export": "^4.0",
+        "bezhansalleh/filament-shield": "^4.0",
+        "eightynine/filament-excel-import": "^4.0",
+        "filament/filament": "^4.0",
+        "filament/widgets": "^4.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
-        "ryangjchandler/filament-progress-column": "^1.0",
-        "saade/filament-autograph": "^3.2"
+        "ryangjchandler/filament-progress-column": "^2.0",
+        "saade/filament-autograph": "4.x-dev"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "filament/upgrade": "^4.0",
         "laravel/pail": "^1.2",
         "laravel/pint": "^1.13",
         "laravel/sail": "^1.41",

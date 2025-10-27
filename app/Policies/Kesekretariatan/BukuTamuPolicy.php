@@ -1,108 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies\Kesekretariatan;
 
-use App\Models\User;
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Kesekretariatan\BukuTamu;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class BukuTamuPolicy
 {
     use HandlesAuthorization;
-
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_kesekretariatan::buku::tamu');
+        return $authUser->can('ViewAny:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, BukuTamu $bukuTamu): bool
+    public function view(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('view_kesekretariatan::buku::tamu');
+        return $authUser->can('View:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_kesekretariatan::buku::tamu');
+        return $authUser->can('Create:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, BukuTamu $bukuTamu): bool
+    public function update(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('update_kesekretariatan::buku::tamu');
+        return $authUser->can('Update:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, BukuTamu $bukuTamu): bool
+    public function delete(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('delete_kesekretariatan::buku::tamu');
+        return $authUser->can('Delete:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can bulk delete.
-     */
-    public function deleteAny(User $user): bool
+    public function restore(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('delete_any_kesekretariatan::buku::tamu');
+        return $authUser->can('Restore:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can permanently delete.
-     */
-    public function forceDelete(User $user, BukuTamu $bukuTamu): bool
+    public function forceDelete(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('force_delete_kesekretariatan::buku::tamu');
+        return $authUser->can('ForceDelete:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can permanently bulk delete.
-     */
-    public function forceDeleteAny(User $user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_kesekretariatan::buku::tamu');
+        return $authUser->can('ForceDeleteAny:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can restore.
-     */
-    public function restore(User $user, BukuTamu $bukuTamu): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_kesekretariatan::buku::tamu');
+        return $authUser->can('RestoreAny:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can bulk restore.
-     */
-    public function restoreAny(User $user): bool
+    public function replicate(AuthUser $authUser, BukuTamu $bukuTamu): bool
     {
-        return $user->can('restore_any_kesekretariatan::buku::tamu');
+        return $authUser->can('Replicate:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can replicate.
-     */
-    public function replicate(User $user, BukuTamu $bukuTamu): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('replicate_kesekretariatan::buku::tamu');
+        return $authUser->can('Reorder:BukuTamu');
     }
 
-    /**
-     * Determine whether the user can reorder.
-     */
-    public function reorder(User $user): bool
-    {
-        return $user->can('reorder_kesekretariatan::buku::tamu');
-    }
 }

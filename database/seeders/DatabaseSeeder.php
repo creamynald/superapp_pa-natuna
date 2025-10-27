@@ -8,6 +8,7 @@ use Database\Seeders\User\DataUser;
 use Database\Seeders\User\RoleUser;
 use Database\Seeders\User\ShieldSeeder;
 use Database\Seeders\DataDemo\DataBerkas;
+use Database\Seeders\DataDemo\TipeCuti;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -22,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DataBerkas::class,
             RoleUser::class,
             ShieldSeeder::class,
+            TipeCuti::class,
         ]);
     }
 }
