@@ -1,3 +1,7 @@
+<?php
+\Carbon\Carbon::setLocale('id');
+setlocale(LC_TIME, 'id_ID.UTF-8', 'id_ID', 'indonesian');
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,7 +12,7 @@
             size: A4;
         }
         body {
-            font-family: Arial, DejaVu Sans, sans-serif;
+            font-family: Arial, sans-serif;
             font-size: 9pt;
             margin: 0;
             padding: 0;
@@ -79,16 +83,15 @@
 <body>
 
 <!-- Header -->
-<p style="text-align:left; text-indent:269.35pt; line-height:115%;">Ranai, {{ $cuti->created_at->format('d F Y') }}</p>
-<p style="text-align:left; text-indent:269.35pt; line-height:115%;">Kepada</p>
-<p style="text-align:left; text-indent:269.35pt; line-height:115%;">Yth. Ketua Pengadilan Agama Natuna</p>
-<p style="text-align:left; text-indent:269.35pt; line-height:115%;">Di-</p>
-<p style="margin-left:18.65pt; text-align:left; text-indent:269.35pt; line-height:115%;">Ranai</p>
+<p style="text-align:left; text-indent:269.35pt; line-height:115%;">Ranai, {{ $cuti->created_at->translatedFormat('d F Y') }}</p>
+<p style="text-align:left; text-indent:269.35pt;">Kepada</p>
+<p style="text-align:left; text-indent:269.35pt;">Yth. Ketua Pengadilan Agama Natuna</p>
+<p style="text-align:left; text-indent:269.35pt;">Di-</p>
+<p style="margin-left:18.65pt; text-align:left; text-indent:269.35pt;">Ranai</p>
 <p>&nbsp;</p>
 <div class="center">
-    <p><strong>FORMULIR PERMINTAAN DAN PEMBERIAN CUTI</strong></p>
-    <p>Nomor :&nbsp;&nbsp;&nbsp;{{ $cuti->nomor_surat ?? '/KPA.W32-A4/KP5.3/VI/' . now()->year }}</p>
-    <p>&nbsp;</p>
+    <p>FORMULIR PERMINTAAN DAN PEMBERIAN CUTI</p>
+    <p>Nomor :&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ $cuti->nomor_surat ?? '/KPA.W32-A4/KP5.3/VI/' . now()->year }}</p>
 </div>
 
 <!-- I. DATA PEGAWAI -->
@@ -125,7 +128,7 @@
     </tr>
     <tr>
         <td class="w-161 list-item">3.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cuti Sakit</td>
-        <td class="w-78 center">{!! $cuti->isLeaveType('Cuti Sakit') ? '√' : '-' !!}</td>
+        <td class="w-78 center">{!! $cuti->isLeaveType('Cuti Sakit') ? '<span style="font-family: DejaVu Sans, sans-serif;">✓</span>' : '-' !!}</td>
         <td class="w-184 list-item">4.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Cuti Melahirkan</td>
         <td class="w-78 center">{{ $cuti->isLeaveType('Cuti Melahirkan') ? '√' : '-' }}</td>
     </tr>
@@ -151,9 +154,9 @@
         <td class="w-28 right">{{ $cuti->duration_days }}</td>
         <td class="w-92 justify">(hari/<s>bulan/tahun</s>)*</td>
         <td class="w-78">Mulai tanggal</td>
-        <td class="w-106 center">{{ $cuti->start_date->format('d F Y') }}</td>
+        <td class="w-106 center">{{ $cuti->start_date->translatedFormat('d F Y') }}</td>
         <td class="w-28 center">s.d.</td>
-        <td class="w-120 center">{{ $cuti->end_date->format('d F Y') }}</td>
+        <td class="w-120 center">{{ $cuti->end_date->translatedFormat('d F Y') }}</td>
     </tr>
 </table>
 
@@ -266,6 +269,5 @@
         </td>
     </tr>
 </table>
-<p style="color:red;">DEBUG: {{ $cuti->leaveType?->name ?? 'NULL' }}</p>
 </body>
 </html>
