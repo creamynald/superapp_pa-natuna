@@ -8,6 +8,9 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Actions\Action;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Str;
+use Filament\Support\Enums\ActionSize;
 
 class PermohonanCutisTable
 {
@@ -75,11 +78,28 @@ class PermohonanCutisTable
             ])
             ->recordActions([
                 EditAction::make(),
+                Action::make('export-pdf')
+                    ->action(function ($record) {
+                        // Load relasi agar $record->leaveType tersedia
+                        $record->load('leaveType');
+
+                        $pdf = Pdf::loadView('export.pdf.permohonan-cuti', [
+                            'cuti' => $record,
+                        ])->setPaper('a4', 'portrait');
+
+                        $nama = Str::slug($record->employee_snapshot['name'] ?? 'pegawai', '-');
+                        $tahun = $record->created_at->year;
+
+                        return response()->streamDownload(
+                            fn () => print($pdf->output()),
+                            "permohonan-cuti-{$nama}-{$tahun}.pdf"
+                        );
+                    }),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

@@ -46,4 +46,14 @@ class PermohonanCuti extends Model {
     { 
         return $this->hasMany(LeaveAttachment::class); 
     }
+
+    public function isLeaveType(string $name): bool
+    {
+        if (!$this->relationLoaded('leaveType') && $this->leave_type_id) {
+            $this->load('leaveType');
+        }
+
+        return $this->leaveType
+            && strtolower(trim($this->leaveType->name)) === strtolower(trim($name));
+    }
 }
