@@ -10,113 +10,131 @@ use Illuminate\Support\Facades\Log;
 class JurnalPerkaraImport implements ToCollection
 {
     protected ?array $lastRecord = null;
+    protected ?string $lastSection = null; // 'penggugat' | 'tergugat' | null
 
-    /**
-     * @param Collection $collection
-     */
     public function collection(Collection $collection)
     {
         foreach ($collection as $row) {
-            // Pastikan row array atau bisa diakses sebagai array
-            if (!is_array($row->toArray())) {
-                Log::warning("Baris dilewati karena format tidak sesuai.");
-                continue;
-            }
+            $rowData = (array) $row->toArray();
 
-            $rowData = $row->toArray();
+            // Ambil kolom (0-based) sesuai CSV
+            $nomorPerkara  = trim($rowData[1] ?? '');
+            $klasifikasi   = trim($rowData[3] ?? '');
+            $paraPihakCell = trim((string)($rowData[4] ?? ''));
+            $tahapan       = trim($rowData[5] ?? '');
 
-            // Asumsi urutan kolom CSV/Excel:
-            // 0 => No,
-            // 1 => Nomor Perkara,
-            // 2 => Klasifikasi Perkara,
-            // 3 => Penggugat,
-            // 4 => Tergugat,
-            // 5 => Proses Terakhir,
-
-            $nomorPerkara = trim($rowData[1] ?? '');
-            $klasifikasi = trim($rowData[2] ?? '');
-            $penggugatRaw = $rowData[3] ?? '';
-            $tergugatRaw = $rowData[4] ?? '';
-            $prosesAkhir = trim($rowData[5] ?? '');
-
-            // Jika tidak ada nomor_perkara, anggap ini lanjutan dari perkara sebelumnya
-            if (empty($nomorPerkara)) {
+            // Jika ini baris utama (ada nomor_perkara) -> flush record sebelumnya, mulai yang baru
+            if ($nomorPerkara !== '') {
+                // simpan yang sebelumnya bila ada
                 if ($this->lastRecord) {
-                    // Ambil daftar penggugat dari data saat ini dan gabung ke yang lama
-                    $newPenggugatList = $this->cleanInputMultiple($penggugatRaw);
-                    $existingPenggugatList = $this->cleanInputMultiple($this->lastRecord['penggugat'] ?? '');
-
-                    $mergedPenggugat = array_merge($existingPenggugatList, $newPenggugatList);
-
-                    // Update lastRecord
-                    $this->lastRecord['penggugat'] = implode("\n", $mergedPenggugat);
-
-                    // Simpan perubahan ke database
                     JurnalPerkara::updateOrCreate(
                         ['nomor_perkara' => $this->lastRecord['nomor_perkara']],
                         $this->lastRecord
                     );
-
-                } else {
-                    Log::warning("Baris dilewati karena tidak ada nomor_perkara dan tidak ada record sebelumnya.");
                 }
 
+                // inisialisasi record baru
+                $this->lastRecord = [
+                    'nomor_perkara'       => $nomorPerkara,
+                    'klasifikasi_perkara' => $klasifikasi,
+                    'penggugat'           => '',
+                    'tergugat'            => '',
+                    'proses_terakhir'     => $tahapan, // atau pakai $rowData[6] kalau mau "Status Perkara"
+                ];
+
+                // reset state seksi
+                $this->lastSection = null;
+
+                // baris utama biasanya isi paraPihakCell= "Penggugat :"
+                if ($paraPihakCell !== '') {
+                    $this->updateSectionOrAppendName($paraPihakCell);
+                }
+
+                // lanjut ke baris berikutnya
                 continue;
             }
 
-            // Bersihkan input dan pecah banyak nama
-            $penggugatList = $this->cleanInputMultiple($penggugatRaw);
-            $tergugatList = $this->cleanInputMultiple($tergugatRaw);
-
-            $penggugat = implode("\n", $penggugatList);
-            $tergugat = implode("\n", $tergugatList);
-
-            // Jika tergugat kosong, isi dengan "(tidak ada)"
-            if (empty($tergugat)) {
-                $tergugat = '-';
+            // ------ Di bawah ini: baris lanjutan (nomor_perkara kosong) ------
+            if (!$this->lastRecord) {
+                Log::warning("Baris dilewati: tidak ada nomor_perkara & belum ada record aktif.");
+                continue;
             }
 
-            // Simpan record baru
-            $record = JurnalPerkara::updateOrCreate(
-                ['nomor_perkara' => $nomorPerkara],
-                [
-                    'klasifikasi_perkara' => $klasifikasi,
-                    'penggugat'           => $penggugat,
-                    'tergugat'            => $tergugat,
-                    'proses_terakhir'     => $prosesAkhir,
-                ]
-            );
+            // Kolom para pihak bisa berisi:
+            // - "Penggugat :" => set section
+            // - "Tergugat:"   => set section
+            // - Nama          => append ke section saat ini
+            if ($paraPihakCell !== '') {
+                $this->updateSectionOrAppendName($paraPihakCell);
+            }
 
-            // Simpan sebagai lastRecord untuk digabung dengan baris berikutnya
-            $this->lastRecord = $record->toArray();
+            // Kalau ada tahapan di baris lanjutan yang ingin kamu update (opsional):
+            if ($tahapan !== '') {
+                $this->lastRecord['proses_terakhir'] = $tahapan;
+            }
+        }
+
+        // simpan record terakhir
+        if ($this->lastRecord) {
+            JurnalPerkara::updateOrCreate(
+                ['nomor_perkara' => $this->lastRecord['nomor_perkara']],
+                $this->lastRecord
+            );
         }
     }
 
     /**
-     * Bersihkan input dari karakter ilegal seperti "2.RAHAMADI BIN IBRAHIM"
+     * Menentukan section (penggugat/tergugat) atau menambahkan nama ke section aktif.
+     */
+    private function updateSectionOrAppendName(string $cell): void
+    {
+        $label = preg_replace('/\s+/',' ', trim($cell));
+
+        // Deteksi heading
+        if (preg_match('/^Penggugat\s*:$/i', $label)) {
+            $this->lastSection = 'penggugat';
+            return;
+        }
+        if (preg_match('/^Tergugat\s*:$/i', $label)) {
+            $this->lastSection = 'tergugat';
+            return;
+        }
+
+        // Jika bukan heading dan ada section aktif, anggap ini baris nama
+        if ($this->lastSection && $this->lastRecord) {
+            $names = $this->cleanInputMultiple($label);
+            if (!empty($names)) {
+                $joined = implode("\n", $names);
+                if ($this->lastRecord[$this->lastSection] ?? '') {
+                    $this->lastRecord[$this->lastSection] .= "\n" . $joined;
+                } else {
+                    $this->lastRecord[$this->lastSection] = $joined;
+                }
+            }
+        }
+    }
+
+    /**
+     * Bersihkan input dari karakter/prefix angka "2. Nama", dsb.
+     * Di file ini nama biasanya satu per baris, tapi tetap jaga-jaga split ; atau ,.
      */
     private function cleanInputMultiple($value): array
     {
-        $value = (string) ($value ?? ''); // pastikan selalu string
+        $value = (string) ($value ?? '');
         $value = trim($value);
+        if ($value === '') return [];
 
-        if (empty($value)) {
-            return [];
+        // Pecah pakai ; atau , jika ada. Kalau tidak, tetap satu elemen.
+        $parts = preg_split('/[;,]+/', $value) ?: [$value];
+
+        $out = [];
+        foreach ($parts as $p) {
+            $p = trim($p);
+            if ($p === '') continue;
+            // Hapus prefix angka+ titik, mis: "2. RAHAMADI BIN IBRAHIM"
+            $p = preg_replace('/^\d+\.\s*/', '', $p);
+            $out[] = $p;
         }
-
-        // Pisahkan berdasarkan titik koma, titik, atau spasi
-        $lines = preg_split('/[;,]+/', $value);
-        $names = [];
-
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (!empty($line)) {
-                // Hapus prefix angka + titik
-                $name = preg_replace('/^\d+\./', '', $line);
-                $names[] = trim($name);
-            }
-        }
-
-        return $names;
+        return $out;
     }
 }
