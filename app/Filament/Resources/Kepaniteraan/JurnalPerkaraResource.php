@@ -90,7 +90,7 @@ class JurnalPerkaraResource extends Resource
                 TextColumn::make('klasifikasi_perkara')
                     ->label('Klasifikasi Perkara')
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn ($state) => match (trim((string) $state)) {
                         'Cerai Gugat' => 'primary',
                         'Cerai Talak' => 'danger',
                         'Penguasaan Anak' => 'success',
@@ -100,6 +100,8 @@ class JurnalPerkaraResource extends Resource
                         'Perwalian' => 'info',
                         'P3HP/Penetapan Ahli Waris' => 'info',
                         'Kewarisan' => 'info',
+                        'Perubahan Akta' => 'info',
+                        default => 'gray', // <- penting
                     })
                     ->icon(fn ($state): string => match ($state) {
                         'P3HP/Penetapan Ahli Waris' => 'heroicon-m-users',
